@@ -6,6 +6,8 @@ public class PlayerController : MonoBehaviour
 {
     public float speed = 0.0f;
     public TextMeshProUGUI scoreGui;
+    public TextMeshProUGUI winMessage; 
+
     private short count = 0;
     private Rigidbody rb;
     private float movementX;
@@ -15,8 +17,17 @@ public class PlayerController : MonoBehaviour
     {
         rb = GetComponent<Rigidbody>();
         setScoreText();
+        winMessage.text = " ";
     }
 
+    private void OnCollisionEnter(Collision collision)
+    {
+        if(collision.gameObject.CompareTag("Enemy"))
+        {
+            gameObject.SetActive(false);
+            winMessage.text = "You Loose!";
+        }
+    }
     // Update is called once per frame
     void OnMove(InputValue movementValue)
     {
@@ -27,6 +38,10 @@ public class PlayerController : MonoBehaviour
     private void setScoreText()
     {
         scoreGui.text = "Count: " + count.ToString();
+        if(count >= 9)
+        {
+            winMessage.text = "You Win!";
+        }
     }
 
     private void FixedUpdate()
