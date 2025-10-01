@@ -4,6 +4,7 @@ using TMPro;
 
 public class PlayerController : MonoBehaviour
 {
+    
     public float speed = 0.0f;
     public TextMeshProUGUI scoreGui;
     public TextMeshProUGUI winMessage; 
@@ -20,14 +21,7 @@ public class PlayerController : MonoBehaviour
         winMessage.text = " ";
     }
 
-    private void OnCollisionEnter(Collision collision)
-    {
-        if(collision.gameObject.CompareTag("Enemy"))
-        {
-            gameObject.SetActive(false);
-            winMessage.text = "You Loose!";
-        }
-    }
+    
     // Update is called once per frame
     void OnMove(InputValue movementValue)
     {
@@ -57,6 +51,11 @@ public class PlayerController : MonoBehaviour
             other.gameObject.SetActive(false);
             count += 1;
             setScoreText();
-        } 
+        }
+        else if (other.gameObject.CompareTag("Laser"))
+        {
+            gameObject.SetActive(false);
+            winMessage.text = "You Loose!";
+        }
     }
 }

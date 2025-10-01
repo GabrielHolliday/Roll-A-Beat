@@ -1065,8 +1065,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 961739749}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.22206621, y: -0, z: -0, w: 0.9750316}
-  m_LocalPosition: {x: 0, y: 8.83, z: -14.22}
+  m_LocalRotation: {x: 0.22206625, y: -0, z: -0, w: 0.9750316}
+  m_LocalPosition: {x: 0, y: 11.5, z: -18.5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1977,6 +1977,7 @@ MonoBehaviour:
   metronome4: {fileID: 1455608910}
   enemyFolder: {fileID: 2003503852}
   enemyBody: {fileID: 1451273890162418644, guid: df73b613881f50c42be8d05d96c2fae6, type: 3}
+  laser: {fileID: 4829770094572967259, guid: 0baf639191b700f40a54ecc34e2e8ad1, type: 3}
   track: {fileID: 1644895568}
   targetBpm: 142
 --- !u!4 &2107793230
