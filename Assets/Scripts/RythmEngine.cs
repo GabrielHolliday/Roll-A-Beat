@@ -10,6 +10,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Timeline;
 using UnityEngine.UIElements;
+using TMPro;
 
 public class RythmEngine : MonoBehaviour
 {
@@ -32,7 +33,7 @@ public class RythmEngine : MonoBehaviour
     public AudioSource metronome4;
 
     public GameObject enemyFolder;
-
+    public GameObject laserFolder;
 
 
     public GameObject enemyBody;
@@ -42,7 +43,9 @@ public class RythmEngine : MonoBehaviour
     public int targetBpm;
     static private char[] enemyStates = { '0', '0', '0', '0', '0', '0' };
     static private List<char[]> songData = new List<char[]>();
+    static int curSongLength = 0;
 
+    public TextMeshProUGUI winMessage; 
     double bpmTargTime = 0;
 
     private bool ableToStartSong = false;
@@ -68,6 +71,7 @@ public class RythmEngine : MonoBehaviour
     {
 
         GameObject curEnemyBody = Instantiate(enemyBody, enemySpawnLocations[pos], Quaternion.Euler(angle));
+        curEnemyBody.name = pos.ToString();
         activeEnemies[pos] = curEnemyBody;
         curEnemyBody.gameObject.transform.SetParent(enemyFolder.transform, true);
         int iSuckAtCoding = 0;
@@ -113,19 +117,20 @@ public class RythmEngine : MonoBehaviour
     private void fireLaser(Transform parent)
     {
         if (parent == null) return;
-        float targPosForLaser;
-        if (parent.position.x > 0) targPosForLaser = parent.position.x - laser.transform.localScale.y;
-        else targPosForLaser = parent.position.x + laser.transform.localScale.y;
-        GameObject curLaser = Instantiate(laser, new Vector3(targPosForLaser, parent.position.y, parent.position.z), Quaternion.Euler(new Vector3(parent.rotation.x, parent.rotation.y, 90)));
-        curLaser.transform.SetParent(parent);
-        curLaser.name = "laser";
+        float targPosForLaser = parent.position.x;
+        //if (parent.position.x > 0) targPosForLaser = parent.position.x - laser.transform.lossyScale.y;
+        //else targPosForLaser = parent.position.x + laser.transform.lossyScale.y;
+        Debug.Log(parent.rotation.y);
+        GameObject curLaser = Instantiate(laser, new Vector3(targPosForLaser, parent.position.y, parent.position.z), Quaternion.Euler(new Vector3(parent.rotation.eulerAngles.x, parent.rotation.eulerAngles.y, parent.rotation.eulerAngles.z)));
+        curLaser.transform.SetParent(laserFolder.transform);
+        curLaser.name = parent.name;
     }
     //-------------------------------------------------------------------------------
 
     enum easingStyle
     {
         None,
-        Sine,
+        Cube,
    
     }
     enum easingDirection
@@ -137,39 +142,92 @@ public class RythmEngine : MonoBehaviour
     private async void Tween(GameObject item, Vector3 endPos, Vector3 endAngle, int milliseconds, easingStyle style, easingDirection direction)// for animating parts wee woo 
     {
         if (item == null) return;
+        //Debug.Log("atleast we're here");
         List<Vector3> positionChart = new List<Vector3>(); //builds a list of points to hit, and then strikes them based on easing direction
         List<Vector3> angleChart = new List<Vector3>(); //does the same thing but for angles
 
-        float xStep = (endPos.x - item.transform.position.x) / milliseconds;
-        float yStep = (endPos.y - item.transform.position.y) / milliseconds;
-        float zStep = (endPos.z - item.transform.position.z) / milliseconds;
+        float xStep = (endPos.x - item.transform.position.x) / (milliseconds * 10);
+        float yStep = (endPos.y - item.transform.position.y) / (milliseconds * 10);
+        float zStep = (endPos.z - item.transform.position.z) / (milliseconds * 10);
 
-        float xAStep = (endAngle.x - item.transform.rotation.x) / milliseconds;
-        float yAStep = (endAngle.y - item.transform.rotation.y) / milliseconds;
-        float zAStep = (endAngle.z - item.transform.rotation.z) / milliseconds;
+        float xAStep = (endAngle.x - item.transform.rotation.x) / (milliseconds * 10);
+        float yAStep = (endAngle.y - item.transform.rotation.y) / (milliseconds * 10);
+        float zAStep = (endAngle.z - item.transform.rotation.z) / (milliseconds * 10);
 
         positionChart.Add(item.transform.position);
         angleChart.Add(item.transform.rotation.eulerAngles);
 
-        for (int i = 0; i < milliseconds + 1; i++)
+        for (int i = 0; i < milliseconds * 10; i++)
         {
-            positionChart.Add(new Vector3(positionChart[positionChart.Count].x + xStep, positionChart[positionChart.Count].y + yStep, positionChart[positionChart.Count].z + zStep));
-            angleChart.Add(new Vector3(angleChart[angleChart.Count].x + xAStep, angleChart[angleChart.Count].y + yAStep, angleChart[angleChart.Count].z + zAStep));
+            positionChart.Add(new Vector3(positionChart[i].x + xStep, positionChart[i].y + yStep, positionChart[i].z + zStep));
+            angleChart.Add(new Vector3(angleChart[i].x + xAStep, angleChart[i].y + yAStep, angleChart[i].z + zAStep));
         }
-        int jumpPos = 0;
-        for (int i = 0; i < positionChart.Count; i++)
+        int jumpPos = 10;
+        int modifier = 0;
+        int progPos = 0;
+        switch (style)
         {
+            case easingStyle.None:
+                break;
+            case easingStyle.Cube:
+                modifier = 1000;
+                break;
 
-            
-
-            
         }
+        switch (direction)
+        {
+            case easingDirection.In:
+                jumpPos = 1000;
+                modifier = math.abs(modifier);
+                break;
+            case easingDirection.Out:
+                jumpPos = 1;
+                modifier = math.abs(modifier) * -1;
+                break;
+
+        }
+        Debug.Log(milliseconds);
+        for (int i = 0; i < milliseconds; i++)
+        {
+            Debug.Log("aaa");
+            item.transform.position = positionChart[progPos];
+            item.transform.rotation = quaternion.Euler(angleChart[progPos]);
+            jumpPos += modifier;
+            progPos += jumpPos;
+            await Task.Delay(1);
+        }
+        item.transform.rotation = quaternion.Euler(endAngle);
 
 
     }
-    private async void rotateEnemy(int rotateAmmount)
+    private async void rotateEnemy(GameObject enemy, int rotateAmmount)
     {
+        int extra = 0;
+        if (enemy.transform.position.x > 0)
+        {
+            rotateAmmount *= -1;
+            extra = 180;
+        }
+        Vector3 targVec3 = new Vector3(0,rotateAmmount, extra);
+        Debug.Log($"{enemy} {targVec3}");
+        enemy.transform.rotation = Quaternion.Euler(targVec3);
+        //Tween(enemy, enemy.transform.position, targVec3, (int)(60.0f / (float)targetBpm * 1000), easingStyle.None, easingDirection.Out);//; stil a wip
 
+
+    }
+
+    public async void stopMusic()
+    {
+        runMetronome = false;
+        for (int i = 0; i < 1100; i++)
+        {
+            track.pitch -= 0.001f;
+            track.volume -= 0.001f;
+            await Task.Delay(2);
+        }
+        track.Stop();
+        track.pitch = 1;
+        track.volume = 1;
     }
     private async void actOnState(double targTime)
     {
@@ -191,28 +249,31 @@ public class RythmEngine : MonoBehaviour
                     break;
                 case '3':
                     chargePiece.gameObject.SetActive(false);
-                    if(curEnemy.transform.Find("laser"))
+                    if (laserFolder.transform.Find(curEnemy.name))
                     {
-                        Destroy(curEnemy.transform.Find("laser").gameObject);
+                        Destroy(laserFolder.transform.Find(curEnemy.name).gameObject);
                     }
                     break;
                 case 'Q':
-                    rotateEnemy(-65);
+                    rotateEnemy(curEnemy, -65);
                     break;
                 case 'A':
-                    rotateEnemy(-45);
+                    rotateEnemy(curEnemy, -45);
                     break;
                 case 'Z':
-                    rotateEnemy(-25);
+                    rotateEnemy(curEnemy, -25);
                     break;
                 case 'E':
-                    rotateEnemy(65);
+                    rotateEnemy(curEnemy, 65);
                     break;
                 case 'D':
-                    rotateEnemy(45);
+                    rotateEnemy(curEnemy, 45);
                     break;
                 case 'C':
-                    rotateEnemy(25);
+                    rotateEnemy(curEnemy, 25);
+                    break;
+                case 'M':
+                    rotateEnemy(curEnemy, 0);
                     break;
 
             }
@@ -233,20 +294,29 @@ public class RythmEngine : MonoBehaviour
 
         while (runMetronome)
         {
+            
             //waiting using bps time
             if (AudioSettings.dspTime > bpmTargTime)
             {
+                if (beat >= curSongLength)
+                {
+                    Debug.Log("we out");
+                    runMetronome = false;
+                    winMessage.text = "You win!";
+                    break;
+
+                }
                 bpmTargTime += bpsAddon;
                 beat += 1;
                 metronomes[cycleInt].PlayScheduled(bpmTargTime);
                 updateStates(bpmTargTime, beat);
-                
+
                 //-----------------------------------------
                 if (cycleInt == 3)
                 {
                     cycleInt = 0;
                     ableToStartSong = true;
-                    //if (track.isPlaying == false) track.PlayScheduled(bpmTargTime + ((float)(offset)) / 1000);
+                    if (track.isPlaying == false) track.PlayScheduled(bpmTargTime + ((float)(offset)) / 1000);
                 }
                 else cycleInt += 1;
 
@@ -268,7 +338,9 @@ public class RythmEngine : MonoBehaviour
     private void buildMapFromFile(string theFile)
     {
 
-        string[] tempStuff = File.ReadAllLines(theFile);
+        string[] tempStuff = Resources.Load<TextAsset>(theFile).text.Split("\n");
+        
+        //string[] tempStuff = File.ReadAllLines(theFile);
         for (int i = 1; i < tempStuff.Length; i++)
         {
             tempStuff[i] = tempStuff[i].Replace("\t", string.Empty);
@@ -276,6 +348,8 @@ public class RythmEngine : MonoBehaviour
             //Debug.Log($"{songData[songData.Count - 1][0]}");
 
         }
+        curSongLength = songData.Count;
+        
     }
 
     private void Awake()
@@ -286,14 +360,14 @@ public class RythmEngine : MonoBehaviour
     void Start()
     {
 
-        string filePath = @"C:\UnityProjects\Roll-A-Beat\Assets\rythmPatternFiles\Test.txt";
 
+        string filePath = "rythmPatternFiles/FluffADuck";
 
 
         buildMapFromFile(filePath);
         //Debug.Log("AAAAAAAAAA");
         
-        bpmCoroutine = BPMManager(targetBpm, 50);
+        bpmCoroutine = BPMManager(targetBpm, -50);
         StartCoroutine(bpmCoroutine);
         //Debug.Log("sdsd");
         Vector3 myCoolAngle = new Vector3(0, 0, 0);

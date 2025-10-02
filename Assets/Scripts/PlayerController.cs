@@ -9,15 +9,18 @@ public class PlayerController : MonoBehaviour
     public TextMeshProUGUI scoreGui;
     public TextMeshProUGUI winMessage; 
 
-    private short count = 0;
+  
     private Rigidbody rb;
     private float movementX;
     private float movementY;
+
+    public RythmEngine rythmEngine;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         rb = GetComponent<Rigidbody>();
-        setScoreText();
+    
         winMessage.text = " ";
     }
 
@@ -29,33 +32,28 @@ public class PlayerController : MonoBehaviour
         movementX = movementVector.x;   
         movementY = movementVector.y;   
     }
-    private void setScoreText()
-    {
-        scoreGui.text = "Count: " + count.ToString();
-        if(count >= 9)
-        {
-            winMessage.text = "You Win!";
-        }
-    }
+
 
     private void FixedUpdate()
     {
         Vector3 movementForce = new Vector3(movementX, -10.0f, movementY);
         rb.AddForce(movementForce * speed);
+        if (transform.position.y < -3)
+        {
+            gameObject.SetActive(false);
+            winMessage.text = "You Loose!";
+            rythmEngine.stopMusic();
+        }
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        if(other.gameObject.CompareTag("PickUp"))
-        {
-            other.gameObject.SetActive(false);
-            count += 1;
-            setScoreText();
-        }
-        else if (other.gameObject.CompareTag("Laser"))
+        
+        if (other.gameObject.CompareTag("Laser"))
         {
             gameObject.SetActive(false);
             winMessage.text = "You Loose!";
+            rythmEngine.stopMusic();
         }
     }
 }
