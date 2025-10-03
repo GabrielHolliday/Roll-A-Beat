@@ -47,7 +47,7 @@ public class RythmEngine : MonoBehaviour
 
     public TextMeshProUGUI winMessage; 
     double bpmTargTime = 0;
-
+    public UtilityScript utilityScript;
     private bool ableToStartSong = false;
 
     static GameObject[] activeEnemies = new GameObject[6]; // will add a seperate table for the forward facing ones, cause theyre boss specific
@@ -127,79 +127,7 @@ public class RythmEngine : MonoBehaviour
     }
     //-------------------------------------------------------------------------------
 
-    enum easingStyle
-    {
-        None,
-        Cube,
-   
-    }
-    enum easingDirection
-    {
-        In,
-        Out,
-        
-    }
-    private async void Tween(GameObject item, Vector3 endPos, Vector3 endAngle, int milliseconds, easingStyle style, easingDirection direction)// for animating parts wee woo 
-    {
-        if (item == null) return;
-        //Debug.Log("atleast we're here");
-        List<Vector3> positionChart = new List<Vector3>(); //builds a list of points to hit, and then strikes them based on easing direction
-        List<Vector3> angleChart = new List<Vector3>(); //does the same thing but for angles
-
-        float xStep = (endPos.x - item.transform.position.x) / (milliseconds * 10);
-        float yStep = (endPos.y - item.transform.position.y) / (milliseconds * 10);
-        float zStep = (endPos.z - item.transform.position.z) / (milliseconds * 10);
-
-        float xAStep = (endAngle.x - item.transform.rotation.x) / (milliseconds * 10);
-        float yAStep = (endAngle.y - item.transform.rotation.y) / (milliseconds * 10);
-        float zAStep = (endAngle.z - item.transform.rotation.z) / (milliseconds * 10);
-
-        positionChart.Add(item.transform.position);
-        angleChart.Add(item.transform.rotation.eulerAngles);
-
-        for (int i = 0; i < milliseconds * 10; i++)
-        {
-            positionChart.Add(new Vector3(positionChart[i].x + xStep, positionChart[i].y + yStep, positionChart[i].z + zStep));
-            angleChart.Add(new Vector3(angleChart[i].x + xAStep, angleChart[i].y + yAStep, angleChart[i].z + zAStep));
-        }
-        int jumpPos = 10;
-        int modifier = 0;
-        int progPos = 0;
-        switch (style)
-        {
-            case easingStyle.None:
-                break;
-            case easingStyle.Cube:
-                modifier = 1000;
-                break;
-
-        }
-        switch (direction)
-        {
-            case easingDirection.In:
-                jumpPos = 1000;
-                modifier = math.abs(modifier);
-                break;
-            case easingDirection.Out:
-                jumpPos = 1;
-                modifier = math.abs(modifier) * -1;
-                break;
-
-        }
-        Debug.Log(milliseconds);
-        for (int i = 0; i < milliseconds; i++)
-        {
-            Debug.Log("aaa");
-            item.transform.position = positionChart[progPos];
-            item.transform.rotation = quaternion.Euler(angleChart[progPos]);
-            jumpPos += modifier;
-            progPos += jumpPos;
-            await Task.Delay(1);
-        }
-        item.transform.rotation = quaternion.Euler(endAngle);
-
-
-    }
+    
     private async void rotateEnemy(GameObject enemy, int rotateAmmount)
     {
         int extra = 0;
@@ -210,8 +138,8 @@ public class RythmEngine : MonoBehaviour
         }
         Vector3 targVec3 = new Vector3(0,rotateAmmount, extra);
         Debug.Log($"{enemy} {targVec3}");
-        enemy.transform.rotation = Quaternion.Euler(targVec3);
-        //Tween(enemy, enemy.transform.position, targVec3, (int)(60.0f / (float)targetBpm * 1000), easingStyle.None, easingDirection.Out);//; stil a wip
+        //enemy.transform.rotation = Quaternion.Euler(targVec3);
+        utilityScript.Tween(enemy, enemy.transform.position, targVec3, (int)(30.0f / (float)targetBpm * 1000), UtilityScript.easingStyle.Cube, UtilityScript.easingDirection.Out);//; stil a wip
 
 
     }

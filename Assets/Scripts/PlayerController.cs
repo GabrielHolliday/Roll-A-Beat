@@ -14,6 +14,8 @@ public class PlayerController : MonoBehaviour
     private float movementX;
     private float movementY;
 
+    public float groundSpeed = 0;
+
     public RythmEngine rythmEngine;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -36,7 +38,7 @@ public class PlayerController : MonoBehaviour
 
     private void FixedUpdate()
     {
-        Vector3 movementForce = new Vector3(movementX, -10.0f, movementY);
+        Vector3 movementForce = new Vector3(movementX, -10.0f, movementY - groundSpeed);
         rb.AddForce(movementForce * speed);
         if (transform.position.y < -3)
         {
