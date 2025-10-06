@@ -577,7 +577,6 @@ GameObject:
   - component: {fileID: 725910703}
   - component: {fileID: 725910702}
   - component: {fileID: 725910701}
-  - component: {fileID: 725910700}
   m_Layer: 0
   m_Name: Ground
   m_TagString: Untagged
@@ -585,22 +584,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &725910700
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 725910699}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3122d5fe4fa5986428adac5871f4aad0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  mainGround: {fileID: 0}
-  spire: {fileID: 0}
-  utilityScript: {fileID: 0}
-  runGroundAnimation: 0
 --- !u!65 &725910701
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -1604,8 +1587,8 @@ AudioSource:
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 8300000, guid: 72eba2fbd9d17fd41b3e50f8555332fe, type: 3}
   m_PlayOnAwake: 0
-  m_Volume: 0
-  m_Pitch: -0.88198286
+  m_Volume: 0.9900001
+  m_Pitch: 0.9900001
   Loop: 0
   Mute: 0
   Spatialize: 0

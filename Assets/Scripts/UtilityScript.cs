@@ -50,12 +50,12 @@ public class UtilityScript : MonoBehaviour
                     else if (direction == easingDirection.Out) lerpyPos = 1.0f - Mathf.Pow(1.0f - lerpyPos, 3.0f);
                     break;
             }
-            item.transform.position = Vector3.Lerp(startPos, endPos, lerpyPos);
-            item.transform.rotation = Quaternion.Slerp(startRot, endRot, lerpyPos);
+            item.transform.localPosition = Vector3.Lerp(startPos, endPos, lerpyPos);
+            item.transform.localRotation = Quaternion.Slerp(startRot, endRot, lerpyPos);
             await Task.Delay(1);
         }
-        item.transform.position = endPos;
-        item.transform.rotation = endRot;
+        item.transform.localPosition = endPos;
+        item.transform.localRotation = endRot;
     }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
