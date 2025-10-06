@@ -548,6 +548,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   mainGround: {fileID: 725910699}
   spire: {fileID: 3015937544584382016, guid: 5ffb986ceac87644e987f6b514179cc6, type: 3}
+  utilityScript: {fileID: 859265563}
+  runGroundAnimation: 1
 --- !u!4 &670105451
 Transform:
   m_ObjectHideFlags: 0
@@ -597,6 +599,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   mainGround: {fileID: 0}
   spire: {fileID: 0}
+  utilityScript: {fileID: 0}
+  runGroundAnimation: 0
 --- !u!65 &725910701
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -679,7 +683,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 725910699}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: -14.047, z: 0}
   m_LocalScale: {x: 11.349873, y: 28.093874, z: 19.752045}
   m_ConstrainProportionsScale: 0
@@ -1600,8 +1604,8 @@ AudioSource:
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 8300000, guid: 72eba2fbd9d17fd41b3e50f8555332fe, type: 3}
   m_PlayOnAwake: 0
-  m_Volume: 1
-  m_Pitch: 1
+  m_Volume: 0
+  m_Pitch: -0.88198286
   Loop: 0
   Mute: 0
   Spatialize: 0
