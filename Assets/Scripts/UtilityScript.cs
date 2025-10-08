@@ -12,6 +12,7 @@ using Unity.VisualScripting;
 using UnityEngine.Timeline;
 using UnityEngine.UIElements;
 using TMPro;
+using UnityEngine.Rendering.VirtualTexturing;
 
 
 
@@ -31,12 +32,16 @@ public class UtilityScript : MonoBehaviour
         Out,
         
     }
+
+
+    private List<GameObject> alreadyTweening = new List<GameObject>();
     public async void Tween(GameObject item, Vector3 endPos, Vector3 endEuler, int milliseconds, easingStyle style, easingDirection direction) //i have taken the time to learn about quaternions
     {
-        if (item == null) return;
+        if (item == null | alreadyTweening.Contains(item)) return;
+        alreadyTweening.Add(item);
 
-        Vector3 startPos = item.transform.position;
-        Quaternion startRot = item.transform.rotation;
+        Vector3 startPos = item.transform.localPosition;
+        Quaternion startRot = item.transform.localRotation;
         Quaternion endRot = Quaternion.Euler(endEuler);
         for (int i = 0; i <= milliseconds; i++)
         {
@@ -56,6 +61,7 @@ public class UtilityScript : MonoBehaviour
         }
         item.transform.localPosition = endPos;
         item.transform.localRotation = endRot;
+        alreadyTweening.Remove(item);
     }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created

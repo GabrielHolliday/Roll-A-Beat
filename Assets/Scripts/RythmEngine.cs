@@ -11,6 +11,7 @@ using UnityEngine;
 using UnityEngine.Timeline;
 using UnityEngine.UIElements;
 using TMPro;
+using UnityEngine.Audio;
 
 public class RythmEngine : MonoBehaviour
 {
@@ -40,29 +41,37 @@ public class RythmEngine : MonoBehaviour
     public GameObject laser;
 
     public AudioSource track;
-    public int targetBpm;
-    static private char[] enemyStates = { '0', '0', '0', '0', '0', '0' };
+    private int targetBpm;
+    static private char[] enemyStates = { '0', '0', '0', '0' };
     static private List<char[]> songData = new List<char[]>();
     static int curSongLength = 0;
 
-    public TextMeshProUGUI winMessage; 
+    public TextMeshProUGUI winMessage;
     double bpmTargTime = 0;
     public UtilityScript utilityScript;
     private bool ableToStartSong = false;
 
-    static GameObject[] activeEnemies = new GameObject[6]; // will add a seperate table for the forward facing ones, cause theyre boss specific
+    static GameObject[] activeEnemies = new GameObject[4]; // will add a seperate table for the forward facing ones, cause theyre boss specific
 
+
+    //song file stuff
+    private string[] songFilePaths = {"Music/Fluffing a Duck - Kevin Macleod (youtube).mp3"};
+    private string[] songsMapFilePaths = {"rythmPatternFiles/FluffADuck" };
+    private int[] songBPMs = { 142 };
+
+
+
+    //----------------------
 
     IEnumerator bpmCoroutine;
 
 
     static Vector3[] enemySpawnLocations = new[] {
-        new Vector3(-11, -10, 5),
-        new Vector3(-11, -10, 0),
-        new Vector3(-11, -10, -5),
-        new Vector3(11, -10, 5),
-        new Vector3(11, -10, 0),
-        new Vector3(11, -10, -5)
+        new Vector3(-11, -10, 2.5f),
+        new Vector3(-11, -10, -7.5f),
+
+        new Vector3(11, -10, 7.5f),
+        new Vector3(11, -10, -2.5f),
     };
 
 
@@ -74,21 +83,16 @@ public class RythmEngine : MonoBehaviour
         curEnemyBody.name = pos.ToString();
         activeEnemies[pos] = curEnemyBody;
         curEnemyBody.gameObject.transform.SetParent(enemyFolder.transform, true);
-        int iSuckAtCoding = 0;
-        float increase = 1;
-        while (curEnemyBody.transform.position.y < 1) //fix later
-        {
-            increase = 1 - increase * 0.9f;
-            iSuckAtCoding++;
-            //Debug.Log(curEnemyBody.transform.position.y);
-            curEnemyBody.transform.position = Vector3.Lerp(curEnemyBody.gameObject.transform.position, new Vector3(enemySpawnLocations[pos].x, 1, enemySpawnLocations[pos].z), increase);
-            if (iSuckAtCoding >= 100)
-            {
-                Debug.Log("Fuckass code lmao");
-                break;
-            }
-        }
-        curEnemyBody.transform.position = new Vector3(enemySpawnLocations[pos].x, 1, enemySpawnLocations[pos].z);
+
+        Vector3 targVec3 = new Vector3(enemySpawnLocations[pos].x, 1, enemySpawnLocations[pos].z);
+        //Debug.Log(curEnemyBody.transform.position.y);
+
+        utilityScript.Tween(curEnemyBody, targVec3, angle, 2000, UtilityScript.easingStyle.Cube, UtilityScript.easingDirection.Out);
+
+
+
+
+        //curEnemyBody.transform.position = new Vector3(enemySpawnLocations[pos].x, 1, enemySpawnLocations[pos].z);
     }
     //--------------------------------------------------------------------------------------------------------------------------------------
 
@@ -98,7 +102,7 @@ public class RythmEngine : MonoBehaviour
         actOnState((60 / targetBpm) / 5);
         while (AudioSettings.dspTime < targTime) await Task.Delay(1);
 
-        for (int i = 0; i < 6; i++) // change length to 8 once we figure out boss stuff
+        for (int i = 0; i < 4; i++) // change length to 8 once we figure out boss stuff
         {
             //Debug.Log(beat);
             //Debug.Log(songData[beat][i]);
@@ -120,14 +124,14 @@ public class RythmEngine : MonoBehaviour
         float targPosForLaser = parent.position.x;
         //if (parent.position.x > 0) targPosForLaser = parent.position.x - laser.transform.lossyScale.y;
         //else targPosForLaser = parent.position.x + laser.transform.lossyScale.y;
-        Debug.Log(parent.rotation.y);
+        //Debug.Log(parent.rotation.y);
         GameObject curLaser = Instantiate(laser, new Vector3(targPosForLaser, parent.position.y, parent.position.z), Quaternion.Euler(new Vector3(parent.rotation.eulerAngles.x, parent.rotation.eulerAngles.y, parent.rotation.eulerAngles.z)));
         curLaser.transform.SetParent(laserFolder.transform);
         curLaser.name = parent.name;
     }
     //-------------------------------------------------------------------------------
 
-    
+
     private async void rotateEnemy(GameObject enemy, int rotateAmmount)
     {
         int extra = 0;
@@ -136,7 +140,7 @@ public class RythmEngine : MonoBehaviour
             rotateAmmount *= -1;
             extra = 180;
         }
-        Vector3 targVec3 = new Vector3(0,rotateAmmount, extra);
+        Vector3 targVec3 = new Vector3(0, rotateAmmount, extra);
         Debug.Log($"{enemy} {targVec3}");
         //enemy.transform.rotation = Quaternion.Euler(targVec3);
         utilityScript.Tween(enemy, enemy.transform.position, targVec3, (int)(30.0f / (float)targetBpm * 1000), UtilityScript.easingStyle.Cube, UtilityScript.easingDirection.Out);//; stil a wip
@@ -160,7 +164,7 @@ public class RythmEngine : MonoBehaviour
     private async void actOnState(double targTime)
     {
         while (AudioSettings.dspTime < targTime) await Task.Delay(1);
-        for (int i = 0; i < 6; i++)
+        for (int i = 0; i < 4; i++)
         {
             GameObject curEnemy = activeEnemies[i];
             Transform chargePiece = curEnemy.transform.Find("FrontThing");//fix (should work maybe?)
@@ -213,7 +217,8 @@ public class RythmEngine : MonoBehaviour
     static public int beat = 0;
     IEnumerator BPMManager(int bpm, int offset)
     {
-        
+
+
         double bpsAddon;
         bpsAddon = (double)60 / (double)(bpm);
         AudioSource[] metronomes = { metronome1, metronome2, metronome3, metronome4 };
@@ -222,7 +227,7 @@ public class RythmEngine : MonoBehaviour
 
         while (runMetronome)
         {
-            
+
             //waiting using bps time
             if (AudioSettings.dspTime > bpmTargTime)
             {
@@ -265,9 +270,8 @@ public class RythmEngine : MonoBehaviour
     //filea reading 
     private void buildMapFromFile(string theFile)
     {
-
         string[] tempStuff = Resources.Load<TextAsset>(theFile).text.Split("\n");
-        
+
         //string[] tempStuff = File.ReadAllLines(theFile);
         for (int i = 1; i < tempStuff.Length; i++)
         {
@@ -277,6 +281,27 @@ public class RythmEngine : MonoBehaviour
 
         }
         curSongLength = songData.Count;
+
+    }
+
+    public async void StartRound(int songIndex)
+    {
+        if (songsMapFilePaths[songIndex] == null) return;
+        targetBpm = songBPMs[songIndex];
+        track.resource = Resources.Load<AudioResource>(songFilePaths[songIndex]);
+        buildMapFromFile(songsMapFilePaths[songIndex]);
+        
+        //Debug.Log("sdsd");
+        Vector3 myCoolAngle = new Vector3(0, 0, 0);
+        for (int i = 0; i < 4; i++)
+        {
+            await Task.Delay(500);
+            if (i > 1) myCoolAngle = new Vector3(0, 0, 180);
+            spawnEnemy(i, myCoolAngle);
+        }
+        await Task.Delay(2000);
+        bpmCoroutine = BPMManager(targetBpm, -50);
+        StartCoroutine(bpmCoroutine);
         
     }
 
@@ -289,21 +314,7 @@ public class RythmEngine : MonoBehaviour
     {
 
 
-        string filePath = "rythmPatternFiles/FluffADuck";
-
-
-        buildMapFromFile(filePath);
-        //Debug.Log("AAAAAAAAAA");
         
-        bpmCoroutine = BPMManager(targetBpm, -50);
-        StartCoroutine(bpmCoroutine);
-        //Debug.Log("sdsd");
-        Vector3 myCoolAngle = new Vector3(0, 0, 0);
-        for (int i = 0; i < 6; i++)
-        {
-            if (i >2) myCoolAngle = new Vector3(0, 0, 180);
-            spawnEnemy(i, myCoolAngle);
-        }
 
 
     }

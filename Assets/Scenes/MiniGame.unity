@@ -319,6 +319,55 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &291512880
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 291512882}
+  - component: {fileID: 291512881}
+  m_Layer: 0
+  m_Name: GameManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &291512881
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 291512880}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 96e604b7ea5db2045b5640ec14e67cbe, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  rythmEngine: {fileID: 2107793229}
+  groundMover: {fileID: 670105450}
+  playerController: {fileID: 849340133}
+  utilityScript: {fileID: 859265563}
+  cameraController: {fileID: 961739754}
+--- !u!4 &291512882
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 291512880}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.7017111, y: -10.718876, z: 2.020773}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &391811191
 GameObject:
   m_ObjectHideFlags: 0
@@ -778,7 +827,7 @@ Transform:
   m_GameObject: {fileID: 849340128}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1, z: 0}
+  m_LocalPosition: {x: 0, y: 1, z: -4.5}
   m_LocalScale: {x: 2, y: 2, z: 2}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -799,7 +848,7 @@ MonoBehaviour:
   speed: 30
   scoreGui: {fileID: 0}
   winMessage: {fileID: 391811193}
-  groundSpeed: 0
+  groundSpeed: 0.2
   rythmEngine: {fileID: 2107793229}
 --- !u!114 &849340134
 MonoBehaviour:
@@ -1585,10 +1634,10 @@ AudioSource:
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 0}
-  m_Resource: {fileID: 8300000, guid: 72eba2fbd9d17fd41b3e50f8555332fe, type: 3}
+  m_Resource: {fileID: 0}
   m_PlayOnAwake: 0
-  m_Volume: 0.9900001
-  m_Pitch: 0.9900001
+  m_Volume: 1
+  m_Pitch: 1
   Loop: 0
   Mute: 0
   Spatialize: 0
@@ -1967,7 +2016,6 @@ MonoBehaviour:
   enemyBody: {fileID: 1451273890162418644, guid: df73b613881f50c42be8d05d96c2fae6, type: 3}
   laser: {fileID: 2640803851776299022, guid: 0baf639191b700f40a54ecc34e2e8ad1, type: 3}
   track: {fileID: 1644895568}
-  targetBpm: 122
   winMessage: {fileID: 391811193}
   utilityScript: {fileID: 859265563}
 --- !u!4 &2107793230
@@ -2006,3 +2054,4 @@ SceneRoots:
   - {fileID: 670105451}
   - {fileID: 725910704}
   - {fileID: 859265564}
+  - {fileID: 291512882}
