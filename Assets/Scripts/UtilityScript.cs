@@ -1,4 +1,3 @@
-using UnityEngine;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -6,20 +5,22 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
+using TMPro;
 using Unity.Mathematics;
 using Unity.VisualScripting;
-
+using UnityEngine;
+using UnityEngine.Rendering.VirtualTexturing;
 using UnityEngine.Timeline;
 using UnityEngine.UIElements;
-using TMPro;
-using UnityEngine.Rendering.VirtualTexturing;
+//using static UnityEditor.Progress;
+using static UnityEngine.Rendering.DebugUI.MessageBox;
 
 
 
 public class UtilityScript : MonoBehaviour
 {
 
-
+    
      public enum easingStyle
     {
         None,
@@ -34,8 +35,21 @@ public class UtilityScript : MonoBehaviour
     }
 
 
+    public async Task WaitFor(int milliseconds)
+    {
+        await Task.Delay(milliseconds);
+        return;
+    }
+
+    public float Clamp(float startNum, float maxNum, float minNum)
+    {
+        if (startNum > maxNum) return maxNum;
+        else if (startNum < minNum) return minNum;
+        return startNum;
+    }
+
     private List<GameObject> alreadyTweening = new List<GameObject>();
-    public async void Tween(GameObject item, Vector3 endPos, Vector3 endEuler, int milliseconds, easingStyle style, easingDirection direction) //i have taken the time to learn about quaternions
+    public async Task Tween(GameObject item, Vector3 endPos, Vector3 endEuler, int milliseconds, easingStyle style, easingDirection direction) //i have taken the time to learn about quaternions
     {
         if (item == null | alreadyTweening.Contains(item)) return;
         alreadyTweening.Add(item);
@@ -64,6 +78,31 @@ public class UtilityScript : MonoBehaviour
         alreadyTweening.Remove(item);
     }
 
+    /*
+    public void tweenNumber(ref float num, float endNum, int milliseconds, easingDirection easeingDir, easingStyle easingSty)
+    {
+        float startPos = num;
+        for (int i = 0; i <= milliseconds; i++)
+        {
+            float lerpyPos = (float)i / milliseconds;
+            switch (easingSty)
+            {
+                case easingStyle.None:
+                    break;
+                case easingStyle.Cube:
+                    if (easeingDir == easingDirection.In) lerpyPos = lerpyPos * lerpyPos * lerpyPos; // no ^ in c#? :(
+                    else if (easeingDir == easingDirection.Out) lerpyPos = 1.0f - Mathf.Pow(1.0f - lerpyPos, 3.0f);
+                    break;
+            }
+
+            num = Mathf.Lerp(startPos, endNum, lerpyPos);
+            Task task = WaitFor(100);//in milliseconds
+            task.Wait();
+
+        }
+        num = endNum;
+    }
+    */
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {

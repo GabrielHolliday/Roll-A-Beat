@@ -1211,13 +1211,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 961739749}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.27294242, y: -0, z: -0, w: 0.96203035}
-  m_LocalPosition: {x: 0, y: 20.46, z: -21.71}
+  m_LocalRotation: {x: 0.30966777, y: 0.000000119209275, z: -0.00000035015458, w: 0.9508449}
+  m_LocalPosition: {x: 0, y: 23.404459, z: -25.751057}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 31.679, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 36.078, y: 0, z: 0}
 --- !u!114 &961739754
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1231,6 +1231,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   player: {fileID: 849340128}
+  utilityScript: {fileID: 859265563}
+  cameraMoveActive: 1
 --- !u!1 &994773790
 GameObject:
   m_ObjectHideFlags: 0
@@ -1636,8 +1638,8 @@ AudioSource:
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 0}
   m_PlayOnAwake: 0
-  m_Volume: 1
-  m_Pitch: 1
+  m_Volume: 0.8080025
+  m_Pitch: 0.8080025
   Loop: 0
   Mute: 0
   Spatialize: 0
@@ -2018,6 +2020,7 @@ MonoBehaviour:
   track: {fileID: 1644895568}
   winMessage: {fileID: 391811193}
   utilityScript: {fileID: 859265563}
+  cameraController: {fileID: 961739754}
 --- !u!4 &2107793230
 Transform:
   m_ObjectHideFlags: 0

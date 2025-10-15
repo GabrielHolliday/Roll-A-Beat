@@ -1,7 +1,7 @@
 using System;
 using Unity.Mathematics.Geometry;
 using Unity.VisualScripting;
-using UnityEditor.PackageManager;
+//using UnityEditor.PackageManager;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using System.Threading.Tasks;
@@ -92,7 +92,7 @@ public class GroundMover : MonoBehaviour
                 
                 if (statuses[i] == 0)
                 {
-                    Debug.Log("AAAAAAAAAAAAAAAAAAAAAAAA");
+                    //Debug.Log("AAAAAAAAAAAAAAAAAAAAAAAA");
                     statuses[i] = 1;
 
                     //activeSpires[i].transform.position = Vector3.Lerp(new Vector3(zSpawnPos / 2, -75, xPosRange / 2 + zOffset), new Vector3(0 - zSpawnPos / 2, -75, 0 - xPosRange / 2 + zOffset), (float)i / (float)activeSpires.Length);

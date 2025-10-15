@@ -49,6 +49,7 @@ public class RythmEngine : MonoBehaviour
     public TextMeshProUGUI winMessage;
     double bpmTargTime = 0;
     public UtilityScript utilityScript;
+    public CameraController cameraController;
     private bool ableToStartSong = false;
 
     static GameObject[] activeEnemies = new GameObject[4]; // will add a seperate table for the forward facing ones, cause theyre boss specific
@@ -125,6 +126,7 @@ public class RythmEngine : MonoBehaviour
         //if (parent.position.x > 0) targPosForLaser = parent.position.x - laser.transform.lossyScale.y;
         //else targPosForLaser = parent.position.x + laser.transform.lossyScale.y;
         //Debug.Log(parent.rotation.y);
+        cameraController.addRumble(10);
         GameObject curLaser = Instantiate(laser, new Vector3(targPosForLaser, parent.position.y, parent.position.z), Quaternion.Euler(new Vector3(parent.rotation.eulerAngles.x, parent.rotation.eulerAngles.y, parent.rotation.eulerAngles.z)));
         curLaser.transform.SetParent(laserFolder.transform);
         curLaser.name = parent.name;
