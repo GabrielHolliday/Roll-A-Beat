@@ -23,17 +23,16 @@ public class CameraController : MonoBehaviour
 
     static float rumbleInt = 0;
     static bool rumblin = false;
-    private async void rumble(float amount)
+
+    private async void rumble()
     {
-        if (rumblin == true)
-        {
-            Debug.Log("skipping");
-            return;
-        }
+    
         rumblin = true;
-        while(rumbleInt >= 0.05 | rumbleInt <= 0.05)
+
+        //utilityScript.tweenNumber(ref rumbBaseMovment, utilityScript.Clamp(rumbleInt, 1,-1), 10, UtilityScript.easingDirection.Out, UtilityScript.easingStyle.Cube);
+        for (int j = 0; j < 100; j++)
         {
-            //utilityScript.tweenNumber(ref rumbBaseMovment, utilityScript.Clamp(rumbleInt, 1,-1), 10, UtilityScript.easingDirection.Out, UtilityScript.easingStyle.Cube);
+
             float stPs = rumbleInt;
             float enPs = -rumbleInt;
             int cycleTime = 10;
@@ -41,19 +40,21 @@ public class CameraController : MonoBehaviour
             {
                 rumbleInt = Mathf.Lerp(stPs, enPs, i / cycleTime);
                 baselineOffset = utilityScript.Clamp(rumbleInt, 0.2f, -0.2f);
-                await Task.Delay(1); 
+                await Task.Delay(1);
             }
             rumbleInt = -rumbleInt / 1.4f;
-            //await Task.Delay(10);
         }
-        Debug.Log("SettingToFalse");
         rumblin = false;
+  
+        
     }
 
     public async void addRumble(float amount)
     {
+        
         rumbleInt += amount;
-        rumble(amount);
+        rumble();
+        Debug.Log(rumbleInt);
     }
 
     

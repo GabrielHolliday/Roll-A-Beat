@@ -17,8 +17,8 @@ public class GroundMover : MonoBehaviour
 
     //internal variables---------------------------------------------------------------------------------------
 
-    static GameObject[] activeSpires = new GameObject[36]; 
-    static int[] statuses = new int[36];// 0 = inactive, and awaiting to be moved up, 1 is already moved up, 2 is moving down
+    static GameObject[] activeSpires = new GameObject[48]; 
+    static int[] statuses = new int[48];// 0 = inactive, and awaiting to be moved up, 1 is already moved up, 2 is moving down
     static float xPosRange = 0;
     static float zSpawnPos = 7;
     static float zRemovePos = 0;
@@ -33,6 +33,7 @@ public class GroundMover : MonoBehaviour
         zSpawnPos = mainGround.transform.localScale.z / 2 + zSpawnPos;
         zRemovePos = 0 - zSpawnPos;
         LoadSpires();
+        moveGround();
         
         
     }
@@ -58,7 +59,7 @@ public class GroundMover : MonoBehaviour
         generateSpire();
         for (int i = 0; i < activeSpires.Length; i++) //initial load up
         {
-            await Task.Delay(500);
+            await Task.Delay(350);
             //Debug.Log("loading");
             if ((i + 1) % 3 == 0)
             {
@@ -140,6 +141,18 @@ public class GroundMover : MonoBehaviour
         statuses[index] = status;
     }
 
+    private async void moveGround()
+    {
+        while(runGroundAnimation == true)
+        {
+            transform.position = new Vector3(transform.position.x, transform.position.y, -zOffset);
+            zOffset += 0.01f;
+            await Task.Delay(1);
+        }
+        
+
+    }
+
   
 
 
@@ -147,8 +160,8 @@ public class GroundMover : MonoBehaviour
     void Update()
     {
         //generateSpire();
-        transform.position = new Vector3(transform.position.x, transform.position.y, -zOffset);
-        zOffset += 0.01f;
+       
+        
 
     }
 }
