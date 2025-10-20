@@ -1,5 +1,7 @@
 using UnityEngine;
 using System.Threading.Tasks;
+using System.Threading;
+using UnityEditor;
 
 public class GameManage : MonoBehaviour
 {
@@ -12,6 +14,8 @@ public class GameManage : MonoBehaviour
 
 
     //-----------------
+    static CancellationTokenSource source;
+    //
 
     private async void wait(int milliseconds)
     {
@@ -20,11 +24,27 @@ public class GameManage : MonoBehaviour
 
     private async void mainRunner()
     {
+        //EditorApplication.playModeStateChanged += closingGame;
+        source = new CancellationTokenSource();
         await Task.Delay(7000);
-        rythmEngine.StartRound(0);
+        rythmEngine.StartRound(0, source.Token);
     }
-   
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
+
+
+    static void closingGame()
+    {
+        //saving
+
+
+
+
+
+
+        //
+
+    }
     void Start()
     {
         mainRunner();

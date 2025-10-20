@@ -64,6 +64,14 @@ public class RythmEngine : MonoBehaviour
 
     //----------------------
 
+
+    //cancelation stuff
+
+    static CancellationTokenSource source;
+
+
+    //-----------------
+
     IEnumerator bpmCoroutine;
 
 
@@ -88,7 +96,7 @@ public class RythmEngine : MonoBehaviour
         Vector3 targVec3 = new Vector3(enemySpawnLocations[pos].x, 1, enemySpawnLocations[pos].z);
         //Debug.Log(curEnemyBody.transform.position.y);
 
-        utilityScript.Tween(curEnemyBody, targVec3, angle, 2000, UtilityScript.easingStyle.Cube, UtilityScript.easingDirection.Out);
+        utilityScript.Tween(curEnemyBody, targVec3, angle, 2000, UtilityScript.easingStyle.Cube, UtilityScript.easingDirection.Out, source.Token);
 
 
 
@@ -145,13 +153,14 @@ public class RythmEngine : MonoBehaviour
         Vector3 targVec3 = new Vector3(0, rotateAmmount, extra);
         Debug.Log($"{enemy} {targVec3}");
         //enemy.transform.rotation = Quaternion.Euler(targVec3);
-        utilityScript.Tween(enemy, enemy.transform.position, targVec3, (int)(30.0f / (float)targetBpm * 1000), UtilityScript.easingStyle.Cube, UtilityScript.easingDirection.Out);//; stil a wip
+        utilityScript.Tween(enemy, enemy.transform.position, targVec3, (int)(30.0f / (float)targetBpm * 1000), UtilityScript.easingStyle.Cube, UtilityScript.easingDirection.Out, source.Token);//; stil a wip
 
 
     }
 
     public async void stopMusic()
     {
+        source.Cancel();
         runMetronome = false;
         for (int i = 0; i < 1100; i++)
         {
@@ -186,6 +195,7 @@ public class RythmEngine : MonoBehaviour
                     if (laserFolder.transform.Find(curEnemy.name))
                     {
                         Destroy(laserFolder.transform.Find(curEnemy.name).gameObject);
+                        Debug.Log($"Destroying... {curEnemy.name}");
                     }
                     break;
                 case 'Q':
@@ -286,9 +296,10 @@ public class RythmEngine : MonoBehaviour
 
     }
 
-    public async void StartRound(int songIndex)
+    public async void StartRound(int songIndex, CancellationToken token)
     {
         if (songsMapFilePaths[songIndex] == null) return;
+        source = new CancellationTokenSource();
         targetBpm = songBPMs[songIndex];
         track.resource = Resources.Load<AudioResource>(songFilePaths[songIndex]);
         buildMapFromFile(songsMapFilePaths[songIndex]);
@@ -304,7 +315,6 @@ public class RythmEngine : MonoBehaviour
         await Task.Delay(2000);
         bpmCoroutine = BPMManager(targetBpm, -50);
         StartCoroutine(bpmCoroutine);
-        
     }
 
     private void Awake()

@@ -34,6 +34,8 @@ public class UtilityScript : MonoBehaviour
         
     }
 
+    //cancelations
+
 
     public async Task WaitFor(int milliseconds)
     {
@@ -49,7 +51,7 @@ public class UtilityScript : MonoBehaviour
     }
 
     private List<GameObject> alreadyTweening = new List<GameObject>();
-    public async Task Tween(GameObject item, Vector3 endPos, Vector3 endEuler, int milliseconds, easingStyle style, easingDirection direction) //i have taken the time to learn about quaternions
+    public async Task Tween(GameObject item, Vector3 endPos, Vector3 endEuler, int milliseconds, easingStyle style, easingDirection direction, CancellationToken token) //i have taken the time to learn about quaternions
     {
         if (item == null | alreadyTweening.Contains(item)) return;
         alreadyTweening.Add(item);
@@ -59,6 +61,10 @@ public class UtilityScript : MonoBehaviour
         Quaternion endRot = Quaternion.Euler(endEuler);
         for (int i = 0; i <= milliseconds; i++)
         {
+            if(token.IsCancellationRequested)
+            {
+                return;
+            }
             float lerpyPos = (float)i / milliseconds;
             switch (style)
             {
