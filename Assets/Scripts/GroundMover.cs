@@ -5,6 +5,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using System.Threading.Tasks;
+using System.Threading;
 
 public class GroundMover : MonoBehaviour
 {
@@ -27,13 +28,19 @@ public class GroundMover : MonoBehaviour
 
     //---------------------------------------------------------------------------------------------------------
 
+    //async cancel
+
+    static CancellationTokenSource source;
+    //
+
     void Start()
     {
+        source = new CancellationTokenSource();
         xPosRange = mainGround.transform.localScale.x;
         zSpawnPos = mainGround.transform.localScale.z / 2 + zSpawnPos;
         zRemovePos = 0 - zSpawnPos;
         LoadSpires();
-        moveGround();
+        moveGround(source.Token);
         
         
     }
@@ -56,7 +63,7 @@ public class GroundMover : MonoBehaviour
             statuses[i] = 1;
 
         }
-        generateSpire();
+        generateSpire(source.Token);
         for (int i = 0; i < activeSpires.Length; i++) //initial load up
         {
             await Task.Delay(350);
@@ -78,11 +85,15 @@ public class GroundMover : MonoBehaviour
             }
 
             Vector3 targPos = new Vector3(activeSpires[i].transform.localPosition.x, -activeSpires[i].transform.localScale.y / 2, zSpawnPos + zOffset);
-            utilityScript.Tween(activeSpires[i], targPos, new Vector3(0, 180, 0), 500, UtilityScript.easingStyle.Cube, UtilityScript.easingDirection.Out);
+            utilityScript.Tween(activeSpires[i], targPos, new Vector3(0, 180, 0), 500, UtilityScript.easingStyle.Cube, UtilityScript.easingDirection.Out, source.Token);
+        }
+        if (source.Token.IsCancellationRequested)
+        {
+            return;
         }
     }
 
-    private async void generateSpire()
+    private async void generateSpire(CancellationToken tkn)
     {
         //
         while (runGroundAnimation == true)
@@ -117,18 +128,22 @@ public class GroundMover : MonoBehaviour
 
                     Vector3 targPos = new Vector3(activeSpires[i].transform.localPosition.x, -activeSpires[i].transform.localScale.y / 2, zSpawnPos + zOffset);
                     //activeSpires[i].transform.localPosition = targPos;
-                    utilityScript.Tween(activeSpires[i], targPos, new Vector3(0, 180, 0), 500, UtilityScript.easingStyle.Cube, UtilityScript.easingDirection.Out);
+                    utilityScript.Tween(activeSpires[i], targPos, new Vector3(0, 180, 0), 500, UtilityScript.easingStyle.Cube, UtilityScript.easingDirection.Out, source.Token);
                 }
                 else if (activeSpires[i].transform.position.z < -12 & statuses[i] == 1)
                 {
                     statuses[i] = 2;
                     //statuses[i] = 0;
                     Vector3 targPos = new Vector3(activeSpires[i].transform.position.x, -75, activeSpires[i].transform.position.z);
-                    utilityScript.Tween(activeSpires[i], targPos, new Vector3(0, 180, 0), 500, UtilityScript.easingStyle.Cube, UtilityScript.easingDirection.In);
+                    utilityScript.Tween(activeSpires[i], targPos, new Vector3(0, 180, 0), 500, UtilityScript.easingStyle.Cube, UtilityScript.easingDirection.In, source.Token);
                     SetInMiliseconds(510, i, 0);
                     //activeSpires[i] = null;
                 }
 
+            }
+            if(tkn.IsCancellationRequested)
+            {
+                return;
             }
             await Task.Delay(1);
         }
@@ -141,16 +156,24 @@ public class GroundMover : MonoBehaviour
         statuses[index] = status;
     }
 
-    private async void moveGround()
+    public void StopGround()
+    {
+        source.Cancel();
+        runGroundAnimation = false;
+    }
+
+    private async void moveGround(CancellationToken tkn)
     {
         while(runGroundAnimation == true)
         {
             transform.position = new Vector3(transform.position.x, transform.position.y, -zOffset);
             zOffset += 0.01f;
             await Task.Delay(1);
+            if (source.Token.IsCancellationRequested)
+            {
+                return;
+            }
         }
-        
-
     }
 
   

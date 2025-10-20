@@ -84,7 +84,7 @@ public class UtilityScript : MonoBehaviour
         alreadyTweening.Remove(item);
     }
 
-    /*
+    
     public void tweenNumber(ref float num, float endNum, int milliseconds, easingDirection easeingDir, easingStyle easingSty)
     {
         float startPos = num;
@@ -108,7 +108,7 @@ public class UtilityScript : MonoBehaviour
         }
         num = endNum;
     }
-    */
+    
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {

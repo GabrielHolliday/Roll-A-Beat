@@ -96,7 +96,7 @@ public class RythmEngine : MonoBehaviour
         Vector3 targVec3 = new Vector3(enemySpawnLocations[pos].x, 1, enemySpawnLocations[pos].z);
         //Debug.Log(curEnemyBody.transform.position.y);
 
-        utilityScript.Tween(curEnemyBody, targVec3, angle, 2000, UtilityScript.easingStyle.Cube, UtilityScript.easingDirection.Out, source.Token);
+        utilityScript.Tween(curEnemyBody, targVec3, angle, 700, UtilityScript.easingStyle.Cube, UtilityScript.easingDirection.Out, source.Token);
 
 
 
@@ -134,7 +134,13 @@ public class RythmEngine : MonoBehaviour
         //if (parent.position.x > 0) targPosForLaser = parent.position.x - laser.transform.lossyScale.y;
         //else targPosForLaser = parent.position.x + laser.transform.lossyScale.y;
         //Debug.Log(parent.rotation.y);
-        cameraController.addRumble(10);
+        //camera angle stuff
+        
+        //if (targPosForLaser < 0 ) cameraController.angleWeight += 2;
+        //else cameraController.angleWeight -= 2;
+        
+        //
+        //cameraController.addRumble(10);
         GameObject curLaser = Instantiate(laser, new Vector3(targPosForLaser, parent.position.y, parent.position.z), Quaternion.Euler(new Vector3(parent.rotation.eulerAngles.x, parent.rotation.eulerAngles.y, parent.rotation.eulerAngles.z)));
         curLaser.transform.SetParent(laserFolder.transform);
         curLaser.name = parent.name;
@@ -196,6 +202,12 @@ public class RythmEngine : MonoBehaviour
                     {
                         Destroy(laserFolder.transform.Find(curEnemy.name).gameObject);
                         Debug.Log($"Destroying... {curEnemy.name}");
+                        Debug.Log(laserFolder.transform.childCount);
+                        if(laserFolder.transform.childCount <= 1)
+                        {
+                            cameraController.rumblin = false;
+                            cameraController.angleWeight = 0;
+                        }
                     }
                     break;
                 case 'Q':

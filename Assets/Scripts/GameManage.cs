@@ -11,12 +11,18 @@ public class GameManage : MonoBehaviour
     public PlayerController playerController;
     public UtilityScript utilityScript;
     public CameraController cameraController;
+    public UIManager uiManager;
 
 
     //-----------------
     static CancellationTokenSource source;
     //
 
+    //events---------------
+
+
+
+    //
     private async void wait(int milliseconds)
     {
         await Task.Delay(milliseconds);
@@ -24,17 +30,18 @@ public class GameManage : MonoBehaviour
 
     private async void mainRunner()
     {
-        //EditorApplication.playModeStateChanged += closingGame;
+        cameraController.bindTo("Ball");
         source = new CancellationTokenSource();
         await Task.Delay(7000);
-        rythmEngine.StartRound(0, source.Token);
+        //rythmEngine.StartRound(0, source.Token);
     }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
 
 
-    static void closingGame()
+    private void closingGame(PlayModeStateChange state)
     {
+        if (state != PlayModeStateChange.ExitingPlayMode) return;
         //saving
 
 
@@ -43,12 +50,16 @@ public class GameManage : MonoBehaviour
 
 
         //
+        groundMover.StopGround();
+        rythmEngine.stopMusic();
 
+        source.Cancel();
+        
     }
     void Start()
     {
+        EditorApplication.playModeStateChanged += closingGame;//only for dev, CHANGE FOR BUILD!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         mainRunner();
-        
     }
 
     // Update is called once per frame
