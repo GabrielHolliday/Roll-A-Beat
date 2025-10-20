@@ -83,7 +83,7 @@ public class CameraController : MonoBehaviour
             //camera position
 
             transform.position = new Vector3(initPos.x + (player.transform.position.x / 3), initPos.y, initPos.z + (player.transform.position.z / 3));
-
+            
             //-----------
 
             //camera tilt

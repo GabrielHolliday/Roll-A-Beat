@@ -2,6 +2,7 @@ using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
 using System.Diagnostics;
+using System.Collections.Generic;
 
 public class UIManager : MonoBehaviour
 {
@@ -22,46 +23,60 @@ public class UIManager : MonoBehaviour
         curCanvas = Instantiate(toSwap);
         curCanvas.gameObject.SetActive(true);
         //UnityEngine.Debug.Log(curCanvas.gameObject.name);
+
+        //getting children 
+
+        List<GameObject> children = new List<GameObject>();
+        for (int i = 0; i < toSwap.transform.childCount; i++)
+        {
+            children.Add(curCanvas.transform.GetChild(i).gameObject);
+        }
         switch(curCanvas.gameObject.name)
         {
             case "MainMenu(Clone)":
-                MainCanvasControl();
+                MainCanvasControl(children);
                 break;
         }
     }
 
-    static void MainCanvasControl()
+    static void MainCanvasControl(List<GameObject> children)
     {
         if (curCanvas == null) return;
-        UnityEngine.Debug.Log("uuu");
+        //UnityEngine.Debug.Log("uuu");
 
         Button playButton = null;
         Button settingsButton = null;
         GameObject blackScreen = null;
 
-        Object[] stuff = curCanvas.GetComponents<GameObject>();
-        for (int i = 0; i < stuff.Length; i++)
+        
+        for (int i = 0; i < children.Count; i++)
         {
-            UnityEngine.Debug.Log(stuff[i].name);
-            switch(stuff[i].name)
+            //UnityEngine.Debug.Log(children[i].name);
+            switch(children[i].name)
             {
                 case "PlayButton":
-                    UnityEngine.Debug.Log("WELL we found the playbutton"); 
-                    playButton = (Button)stuff[i];
+                    //UnityEngine.Debug.Log("WELL we found the playbutton"); 
+                    playButton = children[i].GetComponent<Button>();
                     break;
                 case "SettingsButton":
-                    settingsButton = (Button)stuff[i];
+                    settingsButton = children[i].GetComponent<Button>();
                     break;
                 case "BlackScreen":
-                    blackScreen = (GameObject)stuff[i];
+                    blackScreen = (GameObject)children[i];
                     break;
             }
         }
 
-        if (playButton == null) return;
+        if (playButton == null)
+        {
+            UnityEngine.Debug.Log("playbuttonWasNull");
+            return;
+        }
+        UnityEngine.Debug.Log(playButton.name);
 
+        
         playButton.onClick.AddListener(printy);
-
+        UnityEngine.Debug.Log(playButton.onClick.GetPersistentEventCount());
 
      
 
@@ -73,12 +88,12 @@ public class UIManager : MonoBehaviour
         UnityEngine.Debug.Log("AAAAAAAA");
     }
 
-    static void LevelSelectCanvasControl()
+    static void LevelSelectCanvasControl(List<GameObject> children)
     {
 
     }
 
-    static void PostGameCanvasControl()
+    static void PostGameCanvasControl(List<GameObject> children)
     {
 
     }

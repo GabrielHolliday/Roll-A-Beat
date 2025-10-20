@@ -14,7 +14,7 @@ public class PlayerController : MonoBehaviour
     private float movementX;
     private float movementY;
 
-    public float groundSpeed = 0;
+    public float groundSpeed = 0; //0.2 feels natural
 
     public RythmEngine rythmEngine;
 

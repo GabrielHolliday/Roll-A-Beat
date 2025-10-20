@@ -23,6 +23,19 @@ public class GameManage : MonoBehaviour
 
 
     //
+
+    //Game state stuff
+
+    enum GameState
+    {
+        MainMenu,
+        LevelSelectMenu,
+        PlayingAlive,
+        PlayingDead
+    }
+
+    static GameState state = GameState.MainMenu;
+    //
     private async void wait(int milliseconds)
     {
         await Task.Delay(milliseconds);
@@ -38,15 +51,20 @@ public class GameManage : MonoBehaviour
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
 
+    private async void StartRound(int mapID)
+    {
+        rythmEngine.StartRound(mapID, source.Token);
+        playerController.speed = 0.2f;
+        //maybe add some checking later?
+        state = GameState.PlayingAlive;
+        //
+    }
+
 
     private void closingGame(PlayModeStateChange state)
     {
         if (state != PlayModeStateChange.ExitingPlayMode) return;
         //saving
-
-
-
-
 
 
         //

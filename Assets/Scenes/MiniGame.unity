@@ -1473,7 +1473,7 @@ MonoBehaviour:
   speed: 30
   scoreGui: {fileID: 0}
   winMessage: {fileID: 391811193}
-  groundSpeed: 0.2
+  groundSpeed: 0
   rythmEngine: {fileID: 2107793229}
 --- !u!114 &849340134
 MonoBehaviour:
