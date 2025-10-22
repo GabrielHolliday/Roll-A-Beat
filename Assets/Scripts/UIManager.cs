@@ -3,6 +3,10 @@ using TMPro;
 using UnityEngine.UI;
 using System.Diagnostics;
 using System.Collections.Generic;
+using NUnit.Framework;
+using System.Threading.Tasks;
+using System.Threading;
+using UnityEditor;
 
 public class UIManager : MonoBehaviour
 {
@@ -11,16 +15,26 @@ public class UIManager : MonoBehaviour
     public Canvas LevelSelCanvas;
     public Canvas PostGameCanvas;
 
+    public GameManage gameManager;
+
     static Canvas curCanvas; //how this will work is we'll clone one of the canvases when we need it, so the man canvases are more prefabs.
     void Start()
     {
-        SwapTooAndCleanup(MainCanvas);
+        //SwapTooAndCleanup(MainCanvas);
     }
 
-    static async void SwapTooAndCleanup(Canvas toSwap)
+
+    //for cancelaiton
+
+    static CancellationTokenSource source = new CancellationTokenSource();
+    
+    public async void SwapTooAndCleanup(Canvas toSwap)
     {
-        Destroy(curCanvas);
+        if (curCanvas != null) Destroy(curCanvas.gameObject);
+        source.Cancel();
+        source = new CancellationTokenSource();
         curCanvas = Instantiate(toSwap);
+        toSwap.gameObject.transform.parent = gameObject.transform;
         curCanvas.gameObject.SetActive(true);
         //UnityEngine.Debug.Log(curCanvas.gameObject.name);
 
@@ -34,7 +48,12 @@ public class UIManager : MonoBehaviour
         switch (curCanvas.gameObject.name)
         {
             case "MainMenu(Clone)":
-                MainCanvasControl(children);
+                gameManager.state = GameManage.GameState.MainMenu;
+                MainCanvasControl(children, source.Token);
+                break;
+            case "LevelSelect(Clone)":
+                gameManager.state = GameManage.GameState.LevelSelectMenu;
+                LevelSelectCanvasControl(children, source.Token);
                 break;
         }
     }
@@ -42,14 +61,14 @@ public class UIManager : MonoBehaviour
     //EVERYTHING THAT HAS TO DO WITH THE MAIN CANVAS---------------------------------------
     //-------------------------------------------------------------------------------------
 
-    static void MainCanvasControl(List<GameObject> children)
+    private void MainCanvasControl(List<GameObject> children, CancellationToken token)
     {
         if (curCanvas == null) return;
         //UnityEngine.Debug.Log("uuu");
 
         Button playButton = null;
         Button settingsButton = null;
-        GameObject blackScreen = null;
+        Image blackScreen = null;
 
 
         for (int i = 0; i < children.Count; i++)
@@ -65,7 +84,7 @@ public class UIManager : MonoBehaviour
                     settingsButton = children[i].GetComponent<Button>();
                     break;
                 case "BlackScreen":
-                    blackScreen = (GameObject)children[i];
+                    blackScreen = children[i].GetComponent<Image>();
                     break;
             }
         }
@@ -76,38 +95,159 @@ public class UIManager : MonoBehaviour
             return;
         }
         UnityEngine.Debug.Log(playButton.name);
+        blackScreen.CrossFadeAlpha(0, 0.5f, true);
 
-        void transitionToLevelSelect()
+        async void transitionToLevelSelect()
         {
             playButton.onClick.RemoveAllListeners();
+            blackScreen.CrossFadeAlpha(1, 0, true);
+            //play laugh sound
 
+            //
 
+            //the animation 
+            await Task.Delay(2000);
+            if (token.IsCancellationRequested) return;
+            //
 
-            
+            //actual stuff
+            SwapTooAndCleanup(LevelSelCanvas);
+            //
         }
-
         playButton.onClick.AddListener(transitionToLevelSelect);
         UnityEngine.Debug.Log(playButton.onClick.GetPersistentEventCount());
-
-
-
-
+        
     }
 
 
-    
 
-   
+
+
 
     //-----------------------------------------------------------------------------------------
     //----------------------------------------------------------------------------------------
 
-    static void LevelSelectCanvasControl(List<GameObject> children)
-    {
 
+
+    //LEVEL SELECT STUFF--------------------------------------------
+    //-------------------------------------------------------------
+    private void LevelSelectCanvasControl(List<GameObject> children, CancellationToken token)
+    {
+        int index = 1;
+        Image blackScreen = null;
+        Button startRound;
+        Button back = null;
+        Button left = null;
+        Button right = null;
+        TextMeshProUGUI levelName = null;
+
+        //note -- though the ui knows the song, and whatnot, the ONLY thing it gives the game manager is the index (and eventually dificulty)
+        //the game manager is responisible for double checking that the player has the song unlocked
+
+        List<string> levelNames = new List<string>();
+        //temp list 
+        string[] temp = { "Dungeon", "Forrest", "High Seas" };
+        for (int i = 0; i < 3; i++)
+        {
+            levelNames.Add(temp[i]);
+        }
+
+
+
+        //loady the data from the files to display
+
+        //
+        for (int i = 0; i < children.Count; i++)
+        {
+            //UnityEngine.Debug.Log(children[i].name);
+            switch (children[i].name)
+            {
+                case "StartButton":
+                    //UnityEngine.Debug.Log("WELL we found the playbutton"); 
+                    startRound = children[i].GetComponent<Button>();
+                    break;
+                case "Back":
+                    back = children[i].GetComponent<Button>();
+                    break;
+                case "Left":
+                    left = children[i].GetComponent<Button>();
+                    break;
+                case "Right":
+                    right = children[i].GetComponent<Button>();
+                    break;
+                case "BlackScreen":
+                    blackScreen = children[i].GetComponent<Image>();
+                    break;
+                case "LevelName":
+                    levelName = children[i].GetComponent<TextMeshProUGUI>();
+                    break;
+            }
+        }
+
+        if (blackScreen == null) return;
+
+        levelName.text = levelNames[index - 1];
+        
+        void loadLeft()
+        {
+            if (index <= 1)
+            {
+                //play an error sound or sum
+                left.gameObject.SetActive(false);
+                return;
+            }
+            right.gameObject.SetActive(true);
+
+            index -= 1;
+            levelName.text = levelNames[index - 1];
+            //maybe another function in here, oh yea one that interacts with ground mover for the backrounds, eventually
+
+            if (index <= 1)
+            {
+                left.gameObject.SetActive(false);
+            }
+        }
+
+        void loadRight()
+        {
+            if (index >= levelNames.Count)
+            {
+                //play an error sound or sum
+                right.gameObject.SetActive(false);
+                return;
+            }
+            left.gameObject.SetActive(true);
+            index += 1;
+
+            levelName.text = levelNames[index - 1];
+            //maybe another function in here, oh yea one that interacts with ground mover for the backrounds, eventually
+
+
+
+            if (index >= levelNames.Count)
+            {
+                right.gameObject.SetActive(false);
+            }
+
+        }
+
+        async void LoadBack()
+        {
+            blackScreen.CrossFadeAlpha(1, 0.7f, true);
+            await Task.Delay(1500);
+            if (token.IsCancellationRequested) return;
+            SwapTooAndCleanup(MainCanvas);
+        }
+
+        left.onClick.AddListener(loadLeft);
+        right.onClick.AddListener(loadRight);
+        back.onClick.AddListener(LoadBack);
+
+
+        blackScreen.CrossFadeAlpha(0, 2f, true);
     }
 
-    static void PostGameCanvasControl(List<GameObject> children)
+    private void PostGameCanvasControl(List<GameObject> children)
     {
 
     }
@@ -115,6 +255,13 @@ public class UIManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        if(gameManager.state == GameManage.GameState.LevelSelectMenu)
+        {
+            //if()
+
+
+
+
+        }
     }
 }

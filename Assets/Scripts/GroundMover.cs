@@ -162,6 +162,11 @@ public class GroundMover : MonoBehaviour
         runGroundAnimation = false;
     }
 
+    public void Play(float speed, int levelIndex)
+    {
+        
+    }
+
     private async void moveGround(CancellationToken tkn)
     {
         while(runGroundAnimation == true)
