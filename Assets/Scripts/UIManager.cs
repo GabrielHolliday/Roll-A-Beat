@@ -31,13 +31,16 @@ public class UIManager : MonoBehaviour
         {
             children.Add(curCanvas.transform.GetChild(i).gameObject);
         }
-        switch(curCanvas.gameObject.name)
+        switch (curCanvas.gameObject.name)
         {
             case "MainMenu(Clone)":
                 MainCanvasControl(children);
                 break;
         }
     }
+
+    //EVERYTHING THAT HAS TO DO WITH THE MAIN CANVAS---------------------------------------
+    //-------------------------------------------------------------------------------------
 
     static void MainCanvasControl(List<GameObject> children)
     {
@@ -48,11 +51,11 @@ public class UIManager : MonoBehaviour
         Button settingsButton = null;
         GameObject blackScreen = null;
 
-        
+
         for (int i = 0; i < children.Count; i++)
         {
             //UnityEngine.Debug.Log(children[i].name);
-            switch(children[i].name)
+            switch (children[i].name)
             {
                 case "PlayButton":
                     //UnityEngine.Debug.Log("WELL we found the playbutton"); 
@@ -74,19 +77,30 @@ public class UIManager : MonoBehaviour
         }
         UnityEngine.Debug.Log(playButton.name);
 
-        
-        playButton.onClick.AddListener(printy);
+        void transitionToLevelSelect()
+        {
+            playButton.onClick.RemoveAllListeners();
+
+
+
+            
+        }
+
+        playButton.onClick.AddListener(transitionToLevelSelect);
         UnityEngine.Debug.Log(playButton.onClick.GetPersistentEventCount());
 
-     
+
 
 
     }
 
-    static void printy()
-    {
-        UnityEngine.Debug.Log("AAAAAAAA");
-    }
+
+    
+
+   
+
+    //-----------------------------------------------------------------------------------------
+    //----------------------------------------------------------------------------------------
 
     static void LevelSelectCanvasControl(List<GameObject> children)
     {
