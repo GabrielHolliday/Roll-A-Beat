@@ -35,16 +35,10 @@ public class GameManage : MonoBehaviour
     private List<Song> songs = new List<Song>();
 
     //-----------------
-    static CancellationTokenSource source;
+    public CancellationTokenSource source;
     //
 
     //events---------------
-
-
-
-    //
-    //song indexes
-    List<float> groundSpeeds;
 
     //
 
@@ -79,22 +73,36 @@ public class GameManage : MonoBehaviour
             curSong.songIndex = Int32.Parse(tempStuff[1].Split('\t')[1]);
             curSong.songBPM = Int32.Parse(tempStuff[0].Split('\t')[1]);
             curSong.songBackground = tempStuff[2].Split('\t')[1];
-            curSong.songAudioTrack = Resources.Load<AudioResource>(tempStuff[4].Split('\t')[1]);
+            curSong.songAudioTrack = Resources.Load<AudioResource>("Music/" + tempStuff[4].Split('\t')[1].Trim());
             curSong.songName = tempStuff[3].Split('\t')[1];
             curSong.songLengthInBeats = tempStuff.Length - 9;
             curSong.songGroundSpeed = float.Parse(tempStuff[5].Split('\t')[1]);
             //==========================================================
 
+            //debug=====================================================
+            Debug.Log(curSong.songIndex);
+            Debug.Log(curSong.songBPM);
+            Debug.Log(curSong.songAudioTrack);
+            Debug.Log(tempStuff[4].Split('\t')[1]);
+            Debug.Log(curSong.songBackground);
+            Debug.Log(curSong.songName);
+            Debug.Log(curSong.songLengthInBeats);
+            Debug.Log(curSong.songGroundSpeed);
+            //==========================================================
+
             //getting the map============(and removing blank space)=====
+            curSong.songMap = new List<char[]>();
             for (int j = 9; j < tempStuff.Length; j++)
             {
                 tempStuff[j] = tempStuff[j].Replace("\t", string.Empty);
                 curSong.songMap.Add(tempStuff[j].ToCharArray());
+                //Debug.Log(tempStuff[j]);
             }
             //==========================================================
-
+            songs.Add(curSong);
             
 
+            
         
         }
     }
@@ -114,11 +122,15 @@ public class GameManage : MonoBehaviour
         /// 
         /// 
         /// 
+        /// 
+        
 
 
         if (state == GameState.LevelSelectMenu)
         {
-            rythmEngine.StartRound(0, source.Token);
+
+            StartRound(songIndex);
+            //rythmEngine.StartRound(curSong, source.Token);
             //groundMover.Play()
         }
 
@@ -136,11 +148,13 @@ public class GameManage : MonoBehaviour
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
 
-    private async void StartRound(int mapID)
+    private async void StartRound(int songIndex)
     {
-        rythmEngine.StartRound(mapID, source.Token);
-        playerController.speed = 0.2f;
+        Song curSong = songs.Find(Song => Song.songIndex == songIndex);
+        rythmEngine.StartRound(curSong, source.Token);
+        //playerController.speed = 0.2f;
         //maybe add some checking later?
+        groundMover.Play(curSong.songGroundSpeed, curSong.songBackground);
         state = GameState.PlayingAlive;
         //
     }
@@ -154,7 +168,7 @@ public class GameManage : MonoBehaviour
 
         //
         groundMover.StopGround();
-        rythmEngine.stopMusic();
+        rythmEngine.stopMusic(source.Token);
 
         source.Cancel();
 

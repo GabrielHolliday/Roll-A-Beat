@@ -14,6 +14,7 @@ public class UIManager : MonoBehaviour
     public Canvas MainCanvas;
     public Canvas LevelSelCanvas;
     public Canvas PostGameCanvas;
+    public Canvas playModeCanvas;
 
     public GameManage gameManager;
 
@@ -34,7 +35,7 @@ public class UIManager : MonoBehaviour
         source.Cancel();
         source = new CancellationTokenSource();
         curCanvas = Instantiate(toSwap);
-        toSwap.gameObject.transform.parent = gameObject.transform;
+        curCanvas.gameObject.transform.parent = gameObject.transform;
         curCanvas.gameObject.SetActive(true);
         //UnityEngine.Debug.Log(curCanvas.gameObject.name);
 
@@ -135,7 +136,7 @@ public class UIManager : MonoBehaviour
     {
         int index = 1;
         Image blackScreen = null;
-        Button startRound;
+        Button startRound = null;
         Button back = null;
         Button left = null;
         Button right = null;
@@ -239,9 +240,24 @@ public class UIManager : MonoBehaviour
             SwapTooAndCleanup(MainCanvas);
         }
 
+        async void LoadPlay()
+        {
+            startRound.onClick.RemoveAllListeners();
+            for (int i = 0; i < children.Count; i++)
+            {
+                children[i].gameObject.GetComponent<Image>().CrossFadeAlpha(0, 0.7f, true);
+                await Task.Delay(700);
+                if (token.IsCancellationRequested) return;
+                gameManager.requestRoundStart(index, 1);
+                SwapTooAndCleanup(playModeCanvas);
+            }
+            
+        }
+
         left.onClick.AddListener(loadLeft);
         right.onClick.AddListener(loadRight);
         back.onClick.AddListener(LoadBack);
+        startRound.onClick.AddListener(LoadPlay);
 
 
         blackScreen.CrossFadeAlpha(0, 2f, true);

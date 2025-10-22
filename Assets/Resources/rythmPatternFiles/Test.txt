@@ -1,0 +1,21 @@
+BPM	122					
+index	1					
+Background	Forest					
+Name	MyCoolTest					
+songFileName	FluffingADuck					
+GroundSpeed	0.2					
+						
+						
+TL	BL	TR	BR	BossStatePlusZoom	PLR ATK Chance	SpecialMoves
+0	0	0	0			
+0	0	0	0			
+0	0	0	0			
+1	1	1	1			
+0	0	0	0			
+0	0	0	0			
+0	0	0	0			
+2	2	2	2			
+0	0	0	0			
+0	0	0	0			
+0	0	0	0			
+3	3	3	3			

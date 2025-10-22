@@ -7,7 +7,8 @@ public class PlayerController : MonoBehaviour
     
     public float speed = 0.0f;
     public TextMeshProUGUI scoreGui;
-    public TextMeshProUGUI winMessage; 
+    public TextMeshProUGUI winMessage;
+    public GameManage gameManage;
 
   
     private Rigidbody rb;
@@ -44,7 +45,7 @@ public class PlayerController : MonoBehaviour
         {
             gameObject.SetActive(false);
             winMessage.text = "You Loose!";
-            rythmEngine.stopMusic();
+            rythmEngine.stopMusic(gameManage.source.Token);
         }
     }
 
@@ -55,7 +56,7 @@ public class PlayerController : MonoBehaviour
         {
             gameObject.SetActive(false);
             winMessage.text = "You Loose!";
-            rythmEngine.stopMusic();
+            rythmEngine.stopMusic(gameManage.source.Token);
         }
     }
 }

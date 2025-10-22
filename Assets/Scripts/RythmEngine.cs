@@ -52,10 +52,12 @@ public class RythmEngine : MonoBehaviour
     public CameraController cameraController;
     private bool ableToStartSong = false;
 
+    //public Song song;
+
     static GameObject[] activeEnemies = new GameObject[4]; // will add a seperate table for the forward facing ones, cause theyre boss specific
 
 
-    //song file stuff
+    //old song file stuff, keeping for good measure (for now)
     private string[] songFilePaths = {"Music/Fluffing a Duck - Kevin Macleod (youtube).mp3"};
     private string[] songsMapFilePaths = {"rythmPatternFiles/FluffADuck" };
     private int[] songBPMs = { 142 };
@@ -114,6 +116,7 @@ public class RythmEngine : MonoBehaviour
         for (int i = 0; i < 4; i++) // change length to 8 once we figure out boss stuff
         {
             //Debug.Log(beat);
+            //Debug.Log($"{beat}, {i}");
             //Debug.Log(songData[beat][i]);
             enemyStates[i] = songData[beat][i];
             if (songData[beat][i] == '1')
@@ -164,12 +167,13 @@ public class RythmEngine : MonoBehaviour
 
     }
 
-    public async void stopMusic()
+    public async void stopMusic(CancellationToken token)
     {
         source.Cancel();
         runMetronome = false;
         for (int i = 0; i < 1100; i++)
         {
+            if (token.IsCancellationRequested) return;
             track.pitch -= 0.001f;
             track.volume -= 0.001f;
             await Task.Delay(2);
@@ -238,7 +242,7 @@ public class RythmEngine : MonoBehaviour
     }
 
     //ye olle bread and butter, meant to be a READ ONLY type jawn, pings beat changes------------------------- BE VERY CAREFULL CHANGING CODE, WILL BREAK WHOLE GAME IF NO WORK
-    static public int beat = 0;
+    static public int beat = -4;
     IEnumerator BPMManager(int bpm, int offset)
     {
 
@@ -266,8 +270,7 @@ public class RythmEngine : MonoBehaviour
                 bpmTargTime += bpsAddon;
                 beat += 1;
                 metronomes[cycleInt].PlayScheduled(bpmTargTime);
-                updateStates(bpmTargTime, beat);
-
+                if(beat >= 0) updateStates(bpmTargTime, beat);
                 //-----------------------------------------
                 if (cycleInt == 3)
                 {
@@ -308,13 +311,14 @@ public class RythmEngine : MonoBehaviour
 
     }
 
-    public async void StartRound(int songIndex, CancellationToken token)
+    public async void StartRound(Song song, CancellationToken token)
     {
-        if (songsMapFilePaths[songIndex] == null) return;
+        if (song == null) return;
         source = new CancellationTokenSource();
-        targetBpm = songBPMs[songIndex];
-        track.resource = Resources.Load<AudioResource>(songFilePaths[songIndex]);
-        buildMapFromFile(songsMapFilePaths[songIndex]);
+        targetBpm = song.songBPM;
+        track.resource = song.songAudioTrack;
+        songData = song.songMap;
+        curSongLength = song.songLengthInBeats;
         
         //Debug.Log("sdsd");
         Vector3 myCoolAngle = new Vector3(0, 0, 0);

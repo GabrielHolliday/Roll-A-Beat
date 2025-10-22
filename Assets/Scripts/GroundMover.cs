@@ -13,6 +13,7 @@ public class GroundMover : MonoBehaviour
     public GameObject mainGround;
     public GameObject spire;
     public UtilityScript utilityScript;
+    public PlayerController playerController;
     public bool runGroundAnimation = true;
 
 
@@ -160,10 +161,12 @@ public class GroundMover : MonoBehaviour
     {
         source.Cancel();
         runGroundAnimation = false;
+        playerController.speed = 0;
     }
 
-    public void Play(float speed, int levelIndex)
+    public void Play(float speed, string level)
     {
+        playerController.speed = speed;
         
     }
 
