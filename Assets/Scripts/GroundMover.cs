@@ -166,7 +166,7 @@ public class GroundMover : MonoBehaviour
 
     public void Play(float speed, string level)
     {
-        playerController.speed = speed;
+        playerController.groundSpeed = speed;
         
     }
 

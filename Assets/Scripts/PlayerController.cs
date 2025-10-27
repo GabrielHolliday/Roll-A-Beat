@@ -29,8 +29,11 @@ public class PlayerController : MonoBehaviour
 
     
     // Update is called once per frame
+
+
     void OnMove(InputValue movementValue)
     {
+        Debug.Log("hhhehehehe");
         Vector2 movementVector = movementValue.Get<Vector2>();
         movementX = movementVector.x;   
         movementY = movementVector.y;   
