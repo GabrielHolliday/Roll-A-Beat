@@ -32,7 +32,7 @@ public class GameManage : MonoBehaviour
     public UtilityScript utilityScript;
     public CameraController cameraController;
     public UIManager uiManager;
-    private List<Song> songs = new List<Song>();
+    public List<Song> songs = new List<Song>();
 
     //-----------------
     public CancellationTokenSource source;

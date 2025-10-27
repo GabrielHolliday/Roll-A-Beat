@@ -145,14 +145,28 @@ public class UIManager : MonoBehaviour
         //note -- though the ui knows the song, and whatnot, the ONLY thing it gives the game manager is the index (and eventually dificulty)
         //the game manager is responisible for double checking that the player has the song unlocked
 
+
         List<string> levelNames = new List<string>();
-        //temp list 
+
+        /*
+        //temp list ----
         string[] temp = { "Dungeon", "Forrest", "High Seas" };
+
+        //-------------
+
+        
+
+
         for (int i = 0; i < 3; i++)
         {
             levelNames.Add(temp[i]);
         }
+        */
 
+        foreach (Song song in gameManager.songs)
+        {
+            levelNames.Add(song.songBackground);
+        }
 
 
         //loady the data from the files to display
@@ -253,6 +267,8 @@ public class UIManager : MonoBehaviour
             }
             
         }
+        loadRight();
+        loadLeft();
 
         left.onClick.AddListener(loadLeft);
         right.onClick.AddListener(loadRight);
