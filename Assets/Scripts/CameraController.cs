@@ -92,10 +92,10 @@ public class CameraController : MonoBehaviour
                 case "Ball":
                     targVec3 = new Vector3(baselineOffset + initRot.x - player.transform.position.z / 3, baselineOffset + initRot.y - player.transform.position.x * 1.2f, baselineOffset + initRot.z + angleWeight - player.transform.position.x * 1);
                     break;
-                //case "Mouse":
-                    //targVec3 = new Vector3(baselineOffset + initRot.x - player.transform.position.z / 3, baselineOffset + initRot.y - player.transform.position.x * 1.2f, baselineOffset + initRot.z + angleWeight - player.transform.position.x * 1);
-                    //break;
-                    //^^^figure out later
+                case "Mouse":
+                    targVec3 = new Vector3(baselineOffset + initRot.x - (( Input.mousePosition.y + 300) *0.005f) , baselineOffset + initRot.y + ((Input.mousePosition.x - utilityScript.screenSize.Item2)  * 0.005f), baselineOffset + initRot.z);
+                    break;
+                  
             }
             
 

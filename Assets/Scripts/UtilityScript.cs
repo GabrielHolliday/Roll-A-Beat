@@ -34,6 +34,8 @@ public class UtilityScript : MonoBehaviour
         
     }
 
+
+    public (int, int) screenSize = (UnityEngine.Screen.width, UnityEngine.Screen.height);
     //cancelations
 
 

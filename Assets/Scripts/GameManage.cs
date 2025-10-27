@@ -138,7 +138,7 @@ public class GameManage : MonoBehaviour
 
     private async void mainRunner()
     {
-        cameraController.bindTo("Ball");
+        cameraController.bindTo("Mouse");
         buildSongData();
         source = new CancellationTokenSource();
         uiManager.SwapTooAndCleanup(uiManager.MainCanvas);
@@ -150,6 +150,7 @@ public class GameManage : MonoBehaviour
 
     private async void StartRound(int songIndex)
     {
+        cameraController.bindTo("Ball");
         Song curSong = songs.Find(Song => Song.songIndex == songIndex);
         rythmEngine.StartRound(curSong, source.Token);
         //playerController.speed = 0.2f;

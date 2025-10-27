@@ -7,6 +7,7 @@ using NUnit.Framework;
 using System.Threading.Tasks;
 using System.Threading;
 using UnityEditor;
+using Unity.Android.Gradle.Manifest;
 
 public class UIManager : MonoBehaviour
 {
@@ -17,6 +18,7 @@ public class UIManager : MonoBehaviour
     public Canvas playModeCanvas;
 
     public GameManage gameManager;
+    public CameraController cameraController;
 
     static Canvas curCanvas; //how this will work is we'll clone one of the canvases when we need it, so the man canvases are more prefabs.
     void Start()
@@ -26,6 +28,8 @@ public class UIManager : MonoBehaviour
 
 
     //for cancelaiton
+
+    
 
     static CancellationTokenSource source = new CancellationTokenSource();
     
@@ -49,10 +53,12 @@ public class UIManager : MonoBehaviour
         switch (curCanvas.gameObject.name)
         {
             case "MainMenu(Clone)":
+                cameraController.bindTo("Mouse");
                 gameManager.state = GameManage.GameState.MainMenu;
                 MainCanvasControl(children, source.Token);
                 break;
             case "LevelSelect(Clone)":
+                cameraController.bindTo("Ball");
                 gameManager.state = GameManage.GameState.LevelSelectMenu;
                 LevelSelectCanvasControl(children, source.Token);
                 break;
