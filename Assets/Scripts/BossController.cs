@@ -12,6 +12,7 @@ public class BossController : MonoBehaviour
     public RythmEngine rythmEngine;
     public Camera camera;
     public UtilityScript utilityScript;
+    public GameManage gameManage;
     //
 
     //eye looking stuff
@@ -28,9 +29,9 @@ public class BossController : MonoBehaviour
 
     bool following = true;
 
-    private Vector2 normalIrisBaseSize = new Vector2(0.01f, 0.01f);
-    private Vector2 sparkleIrisBaseSize = new Vector2(0.1f, 0.1f);
-    private Vector2 redSparkleIrisBaseSize = new Vector2(0.06f, 0.05f);
+    private Vector3 normalIrisBaseSize = new Vector3(0.01f,1, 0.01f);
+    private Vector3 sparkleIrisBaseSize = new Vector3(0.1f, 1, 0.1f);
+    private Vector3 redSparkleIrisBaseSize = new Vector3(0.06f,1, 0.05f);
     //
 
     //big boss face
@@ -86,6 +87,8 @@ public class BossController : MonoBehaviour
         await Task.Delay(2000);
         ChangeBossFace("SkullFace");
         //StartIdleBounce();
+        await Task.Delay(4000);
+        SparkleAndAppear(gameManage.source.Token);
     }
 
     private void adjustEyes()
@@ -149,6 +152,7 @@ public class BossController : MonoBehaviour
             else intendedPos = new Vector3(intendedPos.x, intendedPos.y - 3, intendedPos.z);
             flip = !flip;
             await Task.Delay(5000);
+
         }
         stop = false;
 
@@ -188,11 +192,37 @@ public class BossController : MonoBehaviour
         StopIdleBounce();
     }
 
+    public async void SparkleAndAppear(CancellationToken token)
+    {
+        Sparkle(token);
+        await Task.Delay(150);
+        lIris.transform.Find("Standard").gameObject.SetActive(true);
+        rIris.transform.Find("Standard").gameObject.SetActive(true);
+    }
+
 
     public async void Sparkle(CancellationToken token)
     {
-        lIris.transform.Find("Sparkle").gameObject.SetActive(true);
-        rIris.transform.Find("Sparkle").gameObject.SetActive(true);
+
+        GameObject lSpark = lIris.transform.Find("Sparkle").gameObject;
+        GameObject rSpark = rIris.transform.Find("Sparkle").gameObject;
+        Debug.Log(lSpark.name);
+        lSpark.transform.localScale = Vector3.up;
+        rSpark.transform.localScale = Vector3.up;
+        lSpark.SetActive(true);
+        rSpark.SetActive(true);
+
+        utilityScript.Tween(lSpark, lSpark.transform.localPosition, lSpark.transform.localEulerAngles, sparkleIrisBaseSize, 100, UtilityScript.easingStyle.Cube, UtilityScript.easingDirection.Out, gameManage.source.Token);
+        await utilityScript.Tween(rSpark, rSpark.transform.localPosition, rSpark.transform.localEulerAngles, sparkleIrisBaseSize, 100, UtilityScript.easingStyle.Cube, UtilityScript.easingDirection.Out, gameManage.source.Token);
+        Debug.Log("You're here");
+        await Task.Delay(300);
+        if (token.IsCancellationRequested) return;
+
+        utilityScript.Tween(lSpark, lSpark.transform.localPosition, lSpark.transform.localEulerAngles, Vector3.up, 1000, UtilityScript.easingStyle.Cube, UtilityScript.easingDirection.Out, gameManage.source.Token);
+        await utilityScript.Tween(rSpark, rSpark.transform.localPosition, rSpark.transform.localEulerAngles, Vector3.up, 1000, UtilityScript.easingStyle.Cube, UtilityScript.easingDirection.Out, gameManage.source.Token);
+        if (token.IsCancellationRequested) return;
+        lSpark.SetActive(false);
+        rSpark.SetActive(false);
 
     }//need to update tween to be able to scale size (Done!! Yahoo!)
 

@@ -2703,6 +2703,7 @@ MonoBehaviour:
   rythmEngine: {fileID: 2107793229}
   camera: {fileID: 961739752}
   utilityScript: {fileID: 859265563}
+  gameManage: {fileID: 291512881}
 --- !u!4 &631162125
 Transform:
   m_ObjectHideFlags: 0
@@ -5475,7 +5476,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1522309103
 Transform:
   m_ObjectHideFlags: 0
@@ -6193,7 +6194,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1769865527
 Transform:
   m_ObjectHideFlags: 0
