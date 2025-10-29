@@ -41,7 +41,7 @@ public class RythmEngine : MonoBehaviour
     public GameObject laser;
 
     public AudioSource track;
-    private int targetBpm;
+    public int targetBpm;
     static private char[] enemyStates = { '0', '0', '0', '0' };
     static private List<char[]> songData = new List<char[]>();
     static int curSongLength = 0;
@@ -50,6 +50,7 @@ public class RythmEngine : MonoBehaviour
     double bpmTargTime = 0;
     public UtilityScript utilityScript;
     public CameraController cameraController;
+    public BossController bossController;
     private bool ableToStartSong = false;
 
     //public Song song;
@@ -243,6 +244,7 @@ public class RythmEngine : MonoBehaviour
 
     //ye olle bread and butter, meant to be a READ ONLY type jawn, pings beat changes------------------------- BE VERY CAREFULL CHANGING CODE, WILL BREAK WHOLE GAME IF NO WORK
     static public int beat = -4;
+    private bool up = false;
     IEnumerator BPMManager(int bpm, int offset)
     {
 
@@ -277,6 +279,15 @@ public class RythmEngine : MonoBehaviour
                     cycleInt = 0;
                     ableToStartSong = true;
                     if (track.isPlaying == false) track.PlayScheduled(bpmTargTime + ((float)(offset)) / 1000);
+                    if (!up)
+                    {
+                        bossController.bobHeadUp();
+                    }
+                    else
+                    {
+                        bossController.bobHeadDown();
+                    }
+                    up = !up;
                 }
                 else cycleInt += 1;
 

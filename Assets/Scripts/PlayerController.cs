@@ -19,6 +19,8 @@ public class PlayerController : MonoBehaviour
 
     public RythmEngine rythmEngine;
 
+    public bool godMode = false;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -33,7 +35,7 @@ public class PlayerController : MonoBehaviour
 
     void OnMove(InputValue movementValue)
     {
-        Debug.Log("hhhehehehe");
+        //Debug.Log("hhhehehehe");
         Vector2 movementVector = movementValue.Get<Vector2>();
         movementX = movementVector.x;   
         movementY = movementVector.y;   
@@ -55,7 +57,7 @@ public class PlayerController : MonoBehaviour
     private void OnTriggerEnter(Collider other)
     {
         
-        if (other.gameObject.CompareTag("Laser"))
+        if (other.gameObject.CompareTag("Laser") && godMode == false)
         {
             gameObject.SetActive(false);
             winMessage.text = "You Loose!";

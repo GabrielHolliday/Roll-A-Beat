@@ -53,7 +53,42 @@ public class UtilityScript : MonoBehaviour
     }
 
     private List<GameObject> alreadyTweening = new List<GameObject>();
-    public async Task Tween(GameObject item, Vector3 endPos, Vector3 endEuler, int milliseconds, easingStyle style, easingDirection direction, CancellationToken token) //i have taken the time to learn about quaternions
+    public async Task Tween(GameObject item, Vector3 endPos, Vector3 endEuler, Vector3 endScale,  int milliseconds, easingStyle style, easingDirection direction, CancellationToken token)
+    {
+        if (item == null | alreadyTweening.Contains(item)) return;
+        alreadyTweening.Add(item);
+
+        Vector3 startScale = item.transform.localScale;
+        Vector3 startPos = item.transform.localPosition;
+        Quaternion startRot = item.transform.localRotation;
+        Quaternion endRot = Quaternion.Euler(endEuler);
+        for (int i = 0; i <= milliseconds; i++)
+        {
+            if (token.IsCancellationRequested)
+            {
+                return;
+            }
+            float lerpyPos = (float)i / milliseconds;
+            switch (style)
+            {
+                case easingStyle.None:
+                    break;
+                case easingStyle.Cube:
+                    if (direction == easingDirection.In) lerpyPos = lerpyPos * lerpyPos * lerpyPos; // no ^ in c#? :(
+                    else if (direction == easingDirection.Out) lerpyPos = 1.0f - Mathf.Pow(1.0f - lerpyPos, 3.0f);
+                    break;
+            }
+            item.transform.localScale = Vector3.Lerp(startScale, endScale, lerpyPos);
+            item.transform.localPosition = Vector3.Lerp(startPos, endPos, lerpyPos);
+            item.transform.localRotation = Quaternion.Slerp(startRot, endRot, lerpyPos);
+            await Task.Delay(1);
+        }
+        item.transform.localScale = endScale;
+        item.transform.localPosition = endPos;
+        item.transform.localRotation = endRot;
+        alreadyTweening.Remove(item);
+    }
+    public async Task Tween(GameObject item, Vector3 endPos, Vector3 endEuler, int milliseconds, easingStyle style, easingDirection direction, CancellationToken token) 
     {
         if (item == null | alreadyTweening.Contains(item)) return;
         alreadyTweening.Add(item);
@@ -85,8 +120,29 @@ public class UtilityScript : MonoBehaviour
         item.transform.localRotation = endRot;
         alreadyTweening.Remove(item);
     }
+    public async Task Tween(GameObject item, Vector3 endPos, int milliseconds, CancellationToken token) 
+    {
+        if (item == null | alreadyTweening.Contains(item)) return;
+        alreadyTweening.Add(item);
+        Vector3 startPos = item.transform.localPosition;
+        Quaternion startRot = item.transform.localRotation;
+       
+        for (int i = 0; i <= milliseconds; i++)
+        {
+            if (token.IsCancellationRequested)
+            {
+                return;
+            }
+            float lerpyPos = (float)i / milliseconds;
+            item.transform.localPosition = Vector3.Lerp(startPos, endPos, lerpyPos);
+      
+            await Task.Delay(1);
+        }
+        item.transform.localPosition = endPos;
+        alreadyTweening.Remove(item);
+    }
 
-    
+
     public void tweenNumber(ref float num, float endNum, int milliseconds, easingDirection easeingDir, easingStyle easingSty)
     {
         float startPos = num;

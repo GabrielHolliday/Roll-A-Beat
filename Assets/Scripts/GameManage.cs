@@ -32,6 +32,7 @@ public class GameManage : MonoBehaviour
     public UtilityScript utilityScript;
     public CameraController cameraController;
     public UIManager uiManager;
+    public BossController boardController;
     public List<Song> songs = new List<Song>();
 
     //-----------------
