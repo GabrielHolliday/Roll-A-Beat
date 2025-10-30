@@ -7,7 +7,7 @@ using NUnit.Framework;
 using System.Threading.Tasks;
 using System.Threading;
 using UnityEditor;
-using Unity.Android.Gradle.Manifest;
+
 
 public class UIManager : MonoBehaviour
 {

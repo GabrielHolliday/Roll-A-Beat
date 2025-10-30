@@ -51,6 +51,7 @@ public class RythmEngine : MonoBehaviour
     public UtilityScript utilityScript;
     public CameraController cameraController;
     public BossController bossController;
+    public GameManage gameManage;
     private bool ableToStartSong = false;
 
     //public Song song;
@@ -129,6 +130,16 @@ public class RythmEngine : MonoBehaviour
 
     }
     //---------------------------------------------------------------
+    private async void Womp(double targTime, CancellationToken token)//tells other scripts when a beat happens, and any info on what they need to do that beat (ie boss state, works like a foriegn affairs officer)
+    {
+        
+        while (AudioSettings.dspTime < targTime) await Task.Delay(1);
+        if (token.IsCancellationRequested | beat < 0) return;
+
+        bossController.WompRecieve((int)char.GetNumericValue(songData[beat][4]));
+
+
+    }
 
     //FIRIN THHHAAA LAAAAAAZZZZERRRRR~!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!-----------
     private void fireLaser(Transform parent)
@@ -272,6 +283,7 @@ public class RythmEngine : MonoBehaviour
                 bpmTargTime += bpsAddon;
                 beat += 1;
                 metronomes[cycleInt].PlayScheduled(bpmTargTime);
+                Womp(bpmTargTime, gameManage.source.Token);
                 if(beat >= 0) updateStates(bpmTargTime, beat);
                 //-----------------------------------------
                 if (cycleInt == 3)
@@ -281,11 +293,11 @@ public class RythmEngine : MonoBehaviour
                     if (track.isPlaying == false) track.PlayScheduled(bpmTargTime + ((float)(offset)) / 1000);
                     if (!up)
                     {
-                        bossController.bobHeadUp();
+                        //bossController.bobHeadUp();
                     }
                     else
                     {
-                        bossController.bobHeadDown();
+                        //bossController.bobHeadDown();
                     }
                     up = !up;
                 }
@@ -306,7 +318,7 @@ public class RythmEngine : MonoBehaviour
 
 
     //filea reading 
-    private void buildMapFromFile(string theFile)
+    private void buildMapFromFile(string theFile)//old, unused
     {
         string[] tempStuff = Resources.Load<TextAsset>(theFile).text.Split("\n");
 

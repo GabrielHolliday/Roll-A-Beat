@@ -31,12 +31,16 @@ public class BossController : MonoBehaviour
 
     private Vector3 normalIrisBaseSize = new Vector3(0.01f,1, 0.01f);
     private Vector3 sparkleIrisBaseSize = new Vector3(0.1f, 1, 0.1f);
-    private Vector3 redSparkleIrisBaseSize = new Vector3(0.06f,1, 0.05f);
+    private Vector3 redSparkleIrisBaseSize = new Vector3(0.06f, 1, 0.05f);
+
+    private GameObject lStar;
+    private GameObject rStar;
     //
 
     //big boss face
     private GameObject bossFaceParent;
     private Vector3 intendedPos;
+    private Vector3 intendedRot;
     private Vector3 intendedPosP1;
     private Vector3 intendedPosP2;
     private Vector3 basePos;
@@ -65,17 +69,22 @@ public class BossController : MonoBehaviour
         if (rEye != null) rIris = rEye.transform.Find("Iris").gameObject;
         if (lEye != null) lIris = lEye.transform.Find("Iris").gameObject;
 
+        lStar = lIris.transform.Find("RedSparkle").gameObject;
+        rStar = rIris.transform.Find("RedSparkle").gameObject;
+
 
         bossFaceParent = gameObject;
      
         basePos = bossFaceParent.transform.position;
 
-        intendedPosP1 = new Vector3(0, 0, 0);
-        intendedPosP2 = new Vector3(0, 0, -0.5f);
+        intendedPosP2 = new Vector3(0, 0, 0);
+        intendedPosP1 = new Vector3(0, 0, -0.5f);
 
 
         bossFaceParent.transform.position = new Vector3(0, -40, 0);
+
         intendedPos = bossFaceParent.transform.position;
+        intendedRot = new Vector3(-15, 0, 0);
         TestFunctions();
        
         
@@ -84,6 +93,7 @@ public class BossController : MonoBehaviour
 
     private async void TestFunctions()
     {
+       
         await Task.Delay(2000);
         ChangeBossFace("SkullFace");
         //StartIdleBounce();
@@ -103,8 +113,14 @@ public class BossController : MonoBehaviour
             case "Player":
                 lEye.transform.LookAt(player.transform);
                 rEye.transform.LookAt(player.transform);
+
+
                 break;
         }
+
+        rStar.transform.Find("Spot Light").transform.LookAt(player.transform);
+        lStar.transform.Find("Spot Light").transform.LookAt(player.transform);
+
         lIris.transform.LookAt(camera.gameObject.transform);
         //lIris.transform.localPosition = new Vector3(lIris.transform.localPosition.x, lIris.transform.localPosition.y, 0);
 
@@ -116,30 +132,61 @@ public class BossController : MonoBehaviour
         rEye.transform.position = new Vector3(rTargPos.x, rTargPos.y, rEye.transform.position.z);
         */
     }
-    
+
     private void shiftFace()
     {
-       
+
         //main stuff
-        if (intendedPos == Vector3.zero | intendedPos == bossFaceParent.transform.position) return;
-        Vector3 moveVel = intendedPos - bossFaceParent.transform.position;
-        bossFaceParent.transform.position = Vector3.SmoothDamp(bossFaceParent.transform.position, intendedPos, ref moveVel, 0.1f, 80f);
+        if (intendedPos != bossFaceParent.transform.position)
+        {
+            Vector3 moveVel = intendedPos - bossFaceParent.transform.position;
+            bossFaceParent.transform.position = Vector3.SmoothDamp(bossFaceParent.transform.position, intendedPos, ref moveVel, 0.1f, 80f);
+
+            bossFaceParent.transform.rotation = Quaternion.RotateTowards(bossFaceParent.transform.rotation, Quaternion.Euler(intendedRot), 0.03f);
+
+        }
+        
 
         //p1
         if (currentBossFace == null) return;
-        if (intendedPosP1 == Vector3.zero | intendedPosP1 == currentBossFace.transform.Find("Part1").transform.position) return;
-        Vector3 moveVelP1 = intendedPosP1 - currentBossFace.transform.Find("Part1").transform.position;
-        currentBossFace.transform.Find("Part1").transform.position = Vector3.SmoothDamp(currentBossFace.transform.Find("Part1").transform.position, intendedPosP1, ref moveVelP1, 0.05f, 80f);
-
+        if (intendedPosP1 != currentBossFace.transform.Find("Part1").transform.localPosition)
+        {
+            Vector3 moveVelP1 = intendedPosP1 - currentBossFace.transform.Find("Part1").transform.localPosition;
+            currentBossFace.transform.Find("Part1").transform.localPosition = Vector3.SmoothDamp(currentBossFace.transform.Find("Part1").transform.localPosition, intendedPosP1, ref moveVelP1, 0.05f, 80f);
+        }
+        
         //p2
-        if (intendedPosP2 == Vector3.zero | intendedPosP2 == currentBossFace.transform.Find("Part2").transform.position) return;
-        Vector3 moveVelP2 = intendedPosP2 - currentBossFace.transform.Find("Part2").transform.position;
-        currentBossFace.transform.Find("Part2").transform.position = Vector3.SmoothDamp(currentBossFace.transform.Find("Part2").transform.position, intendedPosP2, ref moveVelP1, 0.05f, 80f);
+        if (intendedPosP2 != currentBossFace.transform.Find("Part2").transform.localPosition)
+        {
+            Vector3 moveVelP2 = intendedPosP2 - currentBossFace.transform.Find("Part2").transform.localPosition;
+            currentBossFace.transform.Find("Part2").transform.localPosition = Vector3.SmoothDamp(currentBossFace.transform.Find("Part2").transform.localPosition, intendedPosP2, ref moveVelP2, 0.05f, 80f);
+        }
+     
+        
+    }
+
+    public async void WompRecieve(int state)//ran by rythm manager every beat, using a function and not an event cause data needs to be passed
+    {
+        Debug.Log(state);
+        mode = state;
+        switch (state)//for special animations
+        {
+            case 1:
+                SetNormalAnim();
+                break;
+            case 2:
+                SetAgroAnim1();
+                break;
+            case 3:
+                SetAgroAnim2();
+                break;
+        }
     }
 
 
 
     //ALL THE STUFF THAT OTHER SCRIPTS CAN TELL THE BOSS FACE TO DO!!!!======================================
+    private int mode = 1;
 
     private bool stop =false;
     private bool flip =false;
@@ -234,13 +281,37 @@ public class BossController : MonoBehaviour
 
 
 
-    public void SetAgroAnim()
+    public void SetAgroAnim1()
+    {
+        //skull anim
+        switch (currentBossFace.name)
+        {
+            case "SkullFace":
+                intendedPosP2 = new Vector3(0, 0, -1);
+                lIris.transform.Find("Standard").gameObject.SetActive(true);
+                rIris.transform.Find("Standard").gameObject.SetActive(true);
+                lStar.SetActive(false);
+                rStar.SetActive(false);
+                intendedRot = new Vector3(-25, 0, 0);
+                intendedPos = basePos + new Vector3(0, 2, -8);
+                break;
+        }
+        //wendigoAnim
+    }
+    
+    public void SetAgroAnim2()
     {
         //skull anim
         switch(currentBossFace.name)
         {
             case "SkullFace":
-                intendedPosP1 = new Vector3(0, 0, -1);
+                intendedPosP2 = new Vector3(0, 0, -2);
+                lIris.transform.Find("Standard").gameObject.SetActive(false);
+                rIris.transform.Find("Standard").gameObject.SetActive(false);
+                lStar.SetActive(true);
+                rStar.SetActive(true);
+                intendedRot = new Vector3(-30, 0, 0);
+                intendedPos = basePos + new Vector3(0, 4, -15);
                 break;
         }
         //wendigoAnim
@@ -251,7 +322,13 @@ public class BossController : MonoBehaviour
         switch (currentBossFace.name)
         {
             case "SkullFace":
-                intendedPosP1 = new Vector3(0, 0, 0);
+                intendedPosP2 = new Vector3(0, 0, 0);
+                lStar.SetActive(false);
+                rStar.SetActive(false);
+                lIris.transform.Find("Standard").gameObject.SetActive(true);
+                rIris.transform.Find("Standard").gameObject.SetActive(true);
+                intendedRot = new Vector3(-15, 0, 0);
+                intendedPos = basePos;
                 break;
         }
     }
@@ -267,7 +344,7 @@ public class BossController : MonoBehaviour
             sources[sources.Count - 1].Cancel();
             sources.RemoveAt(sources.Count - 1);
         }
-        
+
         CancellationTokenSource curSc = new CancellationTokenSource();
         sources.Add(curSc);
         CancellationToken token = curSc.Token;
@@ -299,6 +376,14 @@ public class BossController : MonoBehaviour
         sources.Remove(curSc);
     }
 
+    public void rotateEyes()
+    {
+        
+
+        rStar.transform.Rotate(new Vector3(0, rythmEngine.targetBpm, 0) * Time.deltaTime);
+        lStar.transform.Rotate(new Vector3(0, rythmEngine.targetBpm, 0) * Time.deltaTime);
+    }
+
 
 
 
@@ -306,9 +391,23 @@ public class BossController : MonoBehaviour
     //=======================================================================================================
 
     // Update is called once per frame
+    private async void FixedPerBPM()
+    {
+        int bpm = 0;
+        if (rythmEngine.targetBpm < 60) bpm = 60;
+        else bpm = rythmEngine.targetBpm;
+
+        await Task.Delay(100 / bpm);
+        if (gameManage.source.Token.IsCancellationRequested) return;
+        //everything you need to do
+
+
+        //
+    }
     void Update()
     {
         shiftFace();
+        rotateEyes();
         if(following) adjustEyes();
 
 
