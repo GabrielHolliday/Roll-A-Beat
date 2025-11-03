@@ -113,8 +113,10 @@ public class BossController : MonoBehaviour
             case "Player":
                 lEye.transform.LookAt(player.transform);
                 rEye.transform.LookAt(player.transform);
-
-
+                break;
+            case "Camera":
+                lEye.transform.LookAt(camera.gameObject.transform);
+                rEye.transform.LookAt(camera.gameObject.transform);
                 break;
         }
 
@@ -333,6 +335,11 @@ public class BossController : MonoBehaviour
         }
     }
 
+    public void SetLookTarg(string at)
+    {
+        eyesToFollow = at;
+    }
+
     private List<CancellationTokenSource> sources = new List<CancellationTokenSource>();
 
     public async void ChangeBossFace(string changeTo)
@@ -351,11 +358,11 @@ public class BossController : MonoBehaviour
         //
 
         intendedPos = new Vector3(0, -40, 0);
-        Debug.Log("you made it here");
+        //Debug.Log("you made it here");
         await Task.Delay(1000);
 
         if (token.IsCancellationRequested) return;
-        Debug.Log("now here");
+        //Debug.Log("now here");
         for (int i = 0; i < bossFaceParent.transform.childCount; i++)
         {
             GameObject curChild = bossFaceParent.transform.GetChild(i).gameObject;
@@ -370,7 +377,7 @@ public class BossController : MonoBehaviour
         //
 
         intendedPos = basePos;
-        Debug.Log("and even here");
+        //Debug.Log("and even here");
         await Task.Delay(1000);
         if (token.IsCancellationRequested) return;
         sources.Remove(curSc);

@@ -16,7 +16,7 @@ public class CameraController : MonoBehaviour
     void Start()
     {
         initRot = transform.rotation.eulerAngles;
-        Debug.Log(initRot);
+        //Debug.Log(initRot);
         initPos = transform.position;
         
     }

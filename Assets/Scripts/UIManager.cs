@@ -16,9 +16,11 @@ public class UIManager : MonoBehaviour
     public Canvas LevelSelCanvas;
     public Canvas PostGameCanvas;
     public Canvas playModeCanvas;
+    public Canvas onlyShowBoss;
 
     public GameManage gameManager;
     public CameraController cameraController;
+    public BossController bossController;
 
     static Canvas curCanvas; //how this will work is we'll clone one of the canvases when we need it, so the man canvases are more prefabs.
     void Start()
@@ -46,7 +48,7 @@ public class UIManager : MonoBehaviour
         //getting children 
 
         List<GameObject> children = new List<GameObject>();
-        for (int i = 0; i < toSwap.transform.childCount; i++)
+        for (int i = 0; i < curCanvas.transform.childCount; i++)
         {
             children.Add(curCanvas.transform.GetChild(i).gameObject);
         }
@@ -76,6 +78,7 @@ public class UIManager : MonoBehaviour
         Button playButton = null;
         Button settingsButton = null;
         Image blackScreen = null;
+  
 
 
         for (int i = 0; i < children.Count; i++)
@@ -87,7 +90,7 @@ public class UIManager : MonoBehaviour
                     //UnityEngine.Debug.Log("WELL we found the playbutton"); 
                     playButton = children[i].GetComponent<Button>();
                     break;
-                case "SettingsButton":
+                case "SettingButton":
                     settingsButton = children[i].GetComponent<Button>();
                     break;
                 case "BlackScreen":
@@ -101,19 +104,27 @@ public class UIManager : MonoBehaviour
             UnityEngine.Debug.Log("playbuttonWasNull");
             return;
         }
-        UnityEngine.Debug.Log(playButton.name);
+
         blackScreen.CrossFadeAlpha(0, 0.5f, true);
 
         async void transitionToLevelSelect()
         {
+            UnityEngine.Debug.Log("e");
             playButton.onClick.RemoveAllListeners();
-            blackScreen.CrossFadeAlpha(1, 0, true);
+            playButton.gameObject.SetActive(false);
+            settingsButton.gameObject.SetActive(false);
+            onlyShowBoss.gameObject.SetActive(true);
+            bossController.Sparkle(gameManager.source.Token);
+            //bossController.SetLookTarg("Camera");
+            await Task.Delay(2000);
+            blackScreen.CrossFadeAlpha(1, 0.7f, true);
             //play laugh sound
 
             //
 
             //the animation 
             await Task.Delay(2000);
+            onlyShowBoss.gameObject.SetActive(false);
             if (token.IsCancellationRequested) return;
             //
 
@@ -121,7 +132,9 @@ public class UIManager : MonoBehaviour
             SwapTooAndCleanup(LevelSelCanvas);
             //
         }
+        
         playButton.onClick.AddListener(transitionToLevelSelect);
+        blackScreen.CrossFadeAlpha(0, 0.7f, true);
         UnityEngine.Debug.Log(playButton.onClick.GetPersistentEventCount());
         
     }
@@ -275,7 +288,7 @@ public class UIManager : MonoBehaviour
         }
         loadRight();
         loadLeft();
-
+        bossController.SetLookTarg("Player");
         left.onClick.AddListener(loadLeft);
         right.onClick.AddListener(loadRight);
         back.onClick.AddListener(LoadBack);
