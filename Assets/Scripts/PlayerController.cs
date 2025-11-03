@@ -60,8 +60,8 @@ public class PlayerController : MonoBehaviour
         if (other.gameObject.CompareTag("Laser") && godMode == false)
         {
             gameObject.SetActive(false);
-            winMessage.text = "You Loose!";
-            rythmEngine.stopMusic(gameManage.source.Token);
+            gameManage.PlayerDied();
+            
         }
     }
 }

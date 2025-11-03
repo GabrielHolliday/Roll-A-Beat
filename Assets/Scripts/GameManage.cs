@@ -33,7 +33,7 @@ public class GameManage : MonoBehaviour
     public CameraController cameraController;
     public UIManager uiManager;
     public BossController boardController;
-    public List<Song> songs = new List<Song>();
+    
 
     //-----------------
     public CancellationTokenSource source;
@@ -44,6 +44,7 @@ public class GameManage : MonoBehaviour
     //
 
     //Game state stuff
+    public List<Song> songs = new List<Song>();
 
     public enum GameState
     {
@@ -109,11 +110,14 @@ public class GameManage : MonoBehaviour
     }
 
     public GameState state = GameState.MainMenu;
+    
     //
     private async void wait(int milliseconds)
     {
         await Task.Delay(milliseconds);
     }
+
+    //external requests
 
     public void requestRoundStart(int songIndex, int dificulty)
     {
@@ -136,6 +140,16 @@ public class GameManage : MonoBehaviour
         }
 
     }
+
+    public async void PlayerDied()
+    {
+        rythmEngine.stopMusic(source.Token);
+        await Task.Delay(1000);
+        uiManager.SwapTooAndCleanup(uiManager.PostGameCanvas);
+
+    }
+
+    //
 
     private async void mainRunner()
     {
@@ -178,6 +192,7 @@ public class GameManage : MonoBehaviour
     void Start()
     {
         EditorApplication.playModeStateChanged += closingGame;//only for dev, CHANGE FOR BUILD!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        
         mainRunner();
     }
 

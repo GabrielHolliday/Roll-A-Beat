@@ -1,12 +1,15 @@
-using UnityEngine;
-using TMPro;
-using UnityEngine.UI;
-using System.Diagnostics;
+using System;
 using System.Collections.Generic;
-using NUnit.Framework;
-using System.Threading.Tasks;
+using System.Diagnostics;
 using System.Threading;
+using System.Threading.Tasks;
+using NUnit.Framework;
+using TMPro;
+using Unity.VisualScripting.Antlr3.Runtime;
 using UnityEditor;
+using UnityEngine;
+using UnityEngine.UI;
+
 
 
 public class UIManager : MonoBehaviour
@@ -151,9 +154,10 @@ public class UIManager : MonoBehaviour
 
     //LEVEL SELECT STUFF--------------------------------------------
     //-------------------------------------------------------------
+    private int index = 1;
     private void LevelSelectCanvasControl(List<GameObject> children, CancellationToken token)
     {
-        int index = 1;
+        
         Image blackScreen = null;
         Button startRound = null;
         Button back = null;
@@ -297,15 +301,100 @@ public class UIManager : MonoBehaviour
 
         blackScreen.CrossFadeAlpha(0, 2f, true);
     }
-
-    private void PostGameCanvasControl(List<GameObject> children)
+    private bool yPress = false;
+    private bool nPress = false;
+    private void PostGameCanvasControl(List<GameObject> children, CancellationToken token)
     {
+        if (curCanvas == null) return;
+        //UnityEngine.Debug.Log("uuu");
 
+        TextMeshProUGUI internalText = null;
+        
+
+
+
+        for (int i = 0; i < children.Count; i++)
+        {
+            //UnityEngine.Debug.Log(children[i].name);
+            switch (children[i].name)
+            {
+                case "TryAgainText":
+                    //UnityEngine.Debug.Log("WELL we found the playbutton"); 
+                    internalText = children[i].GetComponent<TextMeshProUGUI>();
+                    break;
+            }
+        }
+
+        yPress = false;
+        nPress = false;
+        bool flipFlop = false;
+        bool stillInMenu = true;
+
+        async void flickerText()
+        {
+            while(stillInMenu)
+            {
+                internalText.text = "Give Up?\r\n(Press Y or N)";
+                if (flipFlop) internalText.CrossFadeAlpha(0.3f, 1f, true);
+                else internalText.CrossFadeAlpha(1f, 1f, true);
+                flipFlop = !flipFlop;
+                await Task.Delay(1000);
+                if (token.IsCancellationRequested) return;
+            }
+            
+        }
+
+
+        async void Retry()
+        {
+            UnityEngine.Debug.Log("wee");
+            stillInMenu = false;
+            for (int i = 0; i < children.Count; i++)
+            {
+                internalText.CrossFadeAlpha(0.3f, 0.7f, true);
+                await Task.Delay(700);
+                if (token.IsCancellationRequested) return;
+                gameManager.requestRoundStart(index, 1);
+                SwapTooAndCleanup(playModeCanvas);
+            }  
+        }
+
+        async void checky()
+        {
+            while(stillInMenu == true)
+            {
+                if (yPress) Retry();
+                else if (nPress) ExitToMenu();
+                await Task.Delay(1);
+            }
+        }
+
+       
+        async void ExitToMenu()
+        {
+            stillInMenu = false;
+            SwapTooAndCleanup(LevelSelCanvas);
+        }
+
+        flickerText();
+        checky();
     }
-
+    
     // Update is called once per frame
+    
+   
     void Update()
     {
+        if(Input.GetKeyDown(KeyCode.Y))
+        {
+            UnityEngine.Debug.Log("aa");
+            yPress = true;
+        }
+        if(Input.GetKeyDown(KeyCode.N))
+        {
+            UnityEngine.Debug.Log("bb");
+            nPress = true;
+        }
         if(gameManager.state == GameManage.GameState.LevelSelectMenu)
         {
             //if()
