@@ -44,6 +44,7 @@ public class BossController : MonoBehaviour
     private Vector3 intendedPosP1;
     private Vector3 intendedPosP2;
     private Vector3 basePos;
+    private Vector3 baseRot;
 
     //
 
@@ -63,6 +64,7 @@ public class BossController : MonoBehaviour
         rEyeBasePosSkull = new Vector2(transform.Find("RightEye").transform.position.x, transform.Find("RightEye").transform.position.y);
         lEyeBasePosSkull = new Vector2(transform.Find("LeftEye").transform.position.x, transform.Find("LeftEye").transform.position.y);
 
+       
         rEye = transform.Find("RightEye").gameObject;
         lEye = transform.Find("LeftEye").gameObject;
 
@@ -76,6 +78,7 @@ public class BossController : MonoBehaviour
         bossFaceParent = gameObject;
      
         basePos = bossFaceParent.transform.position;
+        baseRot = new Vector3(-15, 0, 0);
 
         intendedPosP2 = new Vector3(0, 0, 0);
         intendedPosP1 = new Vector3(0, 0, -0.5f);
@@ -95,7 +98,7 @@ public class BossController : MonoBehaviour
     {
        
         await Task.Delay(2000);
-        ChangeBossFace("SkullFace");
+        ChangeBossFace("Wendigo");
         //StartIdleBounce();
         await Task.Delay(4000);
         SparkleAndAppear(gameManage.source.Token);
@@ -216,7 +219,11 @@ public class BossController : MonoBehaviour
 
     public bool requestReset()
     {
+        SetNormalAnim();
+        StopIdleBounce();
+        HideEyes();
         bossFaceParent.transform.position = basePos;
+        bossFaceParent.transform.rotation = Quaternion.Euler(baseRot);
         return true;
     }
     public void bobHeadUp()
@@ -267,8 +274,8 @@ public class BossController : MonoBehaviour
         await Task.Delay(300);
         if (token.IsCancellationRequested) return;
 
-        utilityScript.Tween(lSpark, lSpark.transform.localPosition, lSpark.transform.localEulerAngles, Vector3.up, 1000, UtilityScript.easingStyle.Cube, UtilityScript.easingDirection.Out, gameManage.source.Token);
-        await utilityScript.Tween(rSpark, rSpark.transform.localPosition, rSpark.transform.localEulerAngles, Vector3.up, 1000, UtilityScript.easingStyle.Cube, UtilityScript.easingDirection.Out, gameManage.source.Token);
+        utilityScript.Tween(lSpark, lSpark.transform.localPosition, lSpark.transform.localEulerAngles, Vector3.up, 300, UtilityScript.easingStyle.Cube, UtilityScript.easingDirection.Out, gameManage.source.Token);
+        await utilityScript.Tween(rSpark, rSpark.transform.localPosition, rSpark.transform.localEulerAngles, Vector3.up, 300, UtilityScript.easingStyle.Cube, UtilityScript.easingDirection.Out, gameManage.source.Token);
         if (token.IsCancellationRequested) return;
         lSpark.SetActive(false);
         rSpark.SetActive(false);
@@ -335,6 +342,12 @@ public class BossController : MonoBehaviour
         }
     }
 
+   public void HideEyes()
+   {
+        rIris.transform.Find("Standard").gameObject.SetActive(false);
+        lIris.transform.Find("Standard").gameObject.SetActive(false);
+    }
+
     public void SetLookTarg(string at)
     {
         eyesToFollow = at;
@@ -373,10 +386,14 @@ public class BossController : MonoBehaviour
         currentBossFace.SetActive(true);
 
         //any eye moving for different facePoses
-
+        lEye.transform.position = currentBossFace.transform.Find("lEye").transform.position;
+        rEye.transform.position = currentBossFace.transform.Find("rEye").transform.position;
         //
 
         intendedPos = basePos;
+
+        intendedPosP2 = currentBossFace.transform.Find("Part2").transform.localPosition;
+        intendedPosP1 = currentBossFace.transform.Find("Part1").transform.localPosition;
         //Debug.Log("and even here");
         await Task.Delay(1000);
         if (token.IsCancellationRequested) return;

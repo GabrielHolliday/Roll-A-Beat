@@ -274,9 +274,11 @@ public class RythmEngine : MonoBehaviour
             {
                 if (beat >= curSongLength)
                 {
+                    //song end
                     Debug.Log("we out");
                     runMetronome = false;
-                    winMessage.text = "You win!";
+                    stopMusic(gameManage.source.Token);
+                    gameManage.WinRound();
                     break;
 
                 }
@@ -334,6 +336,18 @@ public class RythmEngine : MonoBehaviour
 
     }
 
+    public void ClearScreen()
+    {
+        for (int i = 0; i < enemyFolder.transform.childCount; i++)
+        {
+            Destroy(enemyFolder.transform.GetChild(i).gameObject);
+        }
+        for (int i = 0; i < laserFolder.transform.childCount; i++)
+        {
+            Destroy(laserFolder.transform.GetChild(i).gameObject);
+        }
+    }
+
     public async void StartRound(Song song, CancellationToken token)
     {
         if (song == null) return;
@@ -342,9 +356,14 @@ public class RythmEngine : MonoBehaviour
         track.resource = song.songAudioTrack;
         songData = song.songMap;
         curSongLength = song.songLengthInBeats;
-        
-        //Debug.Log("sdsd");
+
+        ClearScreen();
+        Debug.Log("sdsd");
         Vector3 myCoolAngle = new Vector3(0, 0, 0);
+        //var resets
+        runMetronome = true;
+        beat = -4;
+        //--
         for (int i = 0; i < 4; i++)
         {
             await Task.Delay(500);

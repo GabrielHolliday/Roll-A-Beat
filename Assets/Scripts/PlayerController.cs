@@ -9,7 +9,7 @@ public class PlayerController : MonoBehaviour
     public TextMeshProUGUI scoreGui;
     public TextMeshProUGUI winMessage;
     public GameManage gameManage;
-
+    private Vector3 respawnPos;
   
     private Rigidbody rb;
     private float movementX;
@@ -25,14 +25,18 @@ public class PlayerController : MonoBehaviour
     void Start()
     {
         rb = GetComponent<Rigidbody>();
-    
+        respawnPos = transform.position + Vector3.up * 30;
         winMessage.text = " ";
     }
 
     
     // Update is called once per frame
 
-
+    public void Respawn()
+    {
+        gameObject.transform.position = respawnPos;
+        gameObject.SetActive(true);
+    }
     void OnMove(InputValue movementValue)
     {
         //Debug.Log("hhhehehehe");
@@ -48,9 +52,10 @@ public class PlayerController : MonoBehaviour
         rb.AddForce(movementForce * speed);
         if (transform.position.y < -3)
         {
+            transform.position = new Vector3(0, 1, 0);
             gameObject.SetActive(false);
-            winMessage.text = "You Loose!";
-            rythmEngine.stopMusic(gameManage.source.Token);
+            
+            gameManage.PlayerDied();
         }
     }
 
@@ -59,6 +64,7 @@ public class PlayerController : MonoBehaviour
         
         if (other.gameObject.CompareTag("Laser") && godMode == false)
         {
+            transform.position = new Vector3(0, 1, 0);
             gameObject.SetActive(false);
             gameManage.PlayerDied();
             

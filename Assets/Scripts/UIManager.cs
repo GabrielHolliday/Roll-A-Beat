@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using TMPro;
+using Unity.Android.Gradle;
 using Unity.VisualScripting.Antlr3.Runtime;
 using UnityEditor;
 using UnityEngine;
@@ -24,6 +25,7 @@ public class UIManager : MonoBehaviour
     public GameManage gameManager;
     public CameraController cameraController;
     public BossController bossController;
+    public RythmEngine rythmEngine;
 
     static Canvas curCanvas; //how this will work is we'll clone one of the canvases when we need it, so the man canvases are more prefabs.
     void Start()
@@ -37,6 +39,11 @@ public class UIManager : MonoBehaviour
     
 
     static CancellationTokenSource source = new CancellationTokenSource();
+
+    //data
+  
+    private string[] bossFaceNames = { "SkullFace", "Wendigo" };
+    //
     
     public async void SwapTooAndCleanup(Canvas toSwap)
     {
@@ -64,8 +71,16 @@ public class UIManager : MonoBehaviour
                 break;
             case "LevelSelect(Clone)":
                 cameraController.bindTo("Ball");
+                rythmEngine.ClearScreen();
+                bossController.requestReset();
+                
                 gameManager.state = GameManage.GameState.LevelSelectMenu;
                 LevelSelectCanvasControl(children, source.Token);
+                break;
+            case "PostGame(Clone)":
+                cameraController.bindTo("Ball");
+                
+                PostGameCanvasControl(children, source.Token);
                 break;
         }
     }
@@ -258,6 +273,7 @@ public class UIManager : MonoBehaviour
             index += 1;
 
             levelName.text = levelNames[index - 1];
+            bossController.ChangeBossFace(bossFaceNames[index - 1]);
             //maybe another function in here, oh yea one that interacts with ground mover for the backrounds, eventually
 
 
@@ -303,12 +319,13 @@ public class UIManager : MonoBehaviour
     }
     private bool yPress = false;
     private bool nPress = false;
-    private void PostGameCanvasControl(List<GameObject> children, CancellationToken token)
+    private async Task PostGameCanvasControl(List<GameObject> children, CancellationToken token)
     {
         if (curCanvas == null) return;
         //UnityEngine.Debug.Log("uuu");
 
         TextMeshProUGUI internalText = null;
+        TextMeshProUGUI winText = null;
         
 
 
@@ -322,6 +339,10 @@ public class UIManager : MonoBehaviour
                     //UnityEngine.Debug.Log("WELL we found the playbutton"); 
                     internalText = children[i].GetComponent<TextMeshProUGUI>();
                     break;
+                case "WinText":
+                    //UnityEngine.Debug.Log("WELL we found the playbutton"); 
+                    winText = children[i].GetComponent<TextMeshProUGUI>();
+                    break;
             }
         }
 
@@ -330,54 +351,70 @@ public class UIManager : MonoBehaviour
         bool flipFlop = false;
         bool stillInMenu = true;
 
-        async void flickerText()
+        if(gameManager.state != GameManage.GameState.PlayingWin)
         {
-            while(stillInMenu)
+            gameManager.state = GameManage.GameState.PlayingDead;
+            internalText.gameObject.SetActive(true);
+            async void flickerText()
             {
-                internalText.text = "Give Up?\r\n(Press Y or N)";
-                if (flipFlop) internalText.CrossFadeAlpha(0.3f, 1f, true);
-                else internalText.CrossFadeAlpha(1f, 1f, true);
-                flipFlop = !flipFlop;
-                await Task.Delay(1000);
-                if (token.IsCancellationRequested) return;
+                while (stillInMenu)
+                {
+                    internalText.text = "Give Up?\r\n(Press Y or N)";
+                    if (flipFlop) internalText.CrossFadeAlpha(0.3f, 1f, true);
+                    else internalText.CrossFadeAlpha(1f, 1f, true);
+                    flipFlop = !flipFlop;
+                    await Task.Delay(1000);
+                    if (token.IsCancellationRequested) return;
+                }
+
             }
-            
-        }
 
 
-        async void Retry()
-        {
-            UnityEngine.Debug.Log("wee");
-            stillInMenu = false;
-            for (int i = 0; i < children.Count; i++)
+            async void Retry()
             {
+                stillInMenu = false;
                 internalText.CrossFadeAlpha(0.3f, 0.7f, true);
                 await Task.Delay(700);
                 if (token.IsCancellationRequested) return;
                 gameManager.requestRoundStart(index, 1);
                 SwapTooAndCleanup(playModeCanvas);
-            }  
-        }
-
-        async void checky()
-        {
-            while(stillInMenu == true)
-            {
-                if (yPress) Retry();
-                else if (nPress) ExitToMenu();
-                await Task.Delay(1);
             }
-        }
 
-       
-        async void ExitToMenu()
+            async void checky()
+            {
+                while (stillInMenu)
+                {
+                    if (token.IsCancellationRequested) return;
+                    UnityEngine.Debug.Log("Buffeting...");
+                    if (nPress) Retry();
+                    else if (yPress) ExitToMenu();
+                    await Task.Delay(1);
+                }
+            }
+
+
+            async void ExitToMenu()
+            {
+                stillInMenu = false;
+                SwapTooAndCleanup(LevelSelCanvas);
+            }
+
+            checky();
+            flickerText();
+        }
+        else
         {
-            stillInMenu = false;
+            UnityEngine.Debug.Log("a");
+            gameManager.state = GameManage.GameState.PlayingDead;
+            winText.gameObject.SetActive(true);
+            //gameManager.WinRound();
+            await Task.Delay(3000);
+            if (token.IsCancellationRequested) return;
             SwapTooAndCleanup(LevelSelCanvas);
-        }
+            
 
-        flickerText();
-        checky();
+        }
+        
     }
     
     // Update is called once per frame

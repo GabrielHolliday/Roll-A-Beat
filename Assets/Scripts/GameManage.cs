@@ -51,7 +51,8 @@ public class GameManage : MonoBehaviour
         MainMenu,
         LevelSelectMenu,
         PlayingAlive,
-        PlayingDead
+        PlayingDead,
+        PlayingWin,
     }
 
     private void buildSongData()
@@ -131,7 +132,7 @@ public class GameManage : MonoBehaviour
         
 
 
-        if (state == GameState.LevelSelectMenu)
+        if (state == GameState.LevelSelectMenu || state == GameState.PlayingDead)
         {
 
             StartRound(songIndex);
@@ -140,9 +141,15 @@ public class GameManage : MonoBehaviour
         }
 
     }
+    private void PlrRespawn()
+    {
+        //playerController.gameObject.SetActive(true);
+        //playerController.Respawn();
+    }
 
     public async void PlayerDied()
     {
+        if (state != GameState.PlayingAlive) return;
         rythmEngine.stopMusic(source.Token);
         await Task.Delay(1000);
         uiManager.SwapTooAndCleanup(uiManager.PostGameCanvas);
@@ -162,14 +169,25 @@ public class GameManage : MonoBehaviour
     }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
+    public void WinRound()
+    {
+        state = GameState.PlayingWin;
+        uiManager.SwapTooAndCleanup(uiManager.PostGameCanvas);
+        playerController.gameObject.SetActive(false);
+        //any unlocking or whatnot
+    }    
 
     private async void StartRound(int songIndex)
     {
+        playerController.Respawn();
         cameraController.bindTo("Ball");
         Song curSong = songs.Find(Song => Song.songIndex == songIndex);
         rythmEngine.StartRound(curSong, source.Token);
+        boardController.requestReset();
+        rythmEngine.ClearScreen();
         //playerController.speed = 0.2f;
         //maybe add some checking later?
+        boardController.SparkleAndAppear(source.Token);
         groundMover.Play(curSong.songGroundSpeed, curSong.songBackground);
         state = GameState.PlayingAlive;
         //
