@@ -66,7 +66,9 @@ public class UIManager : MonoBehaviour
         {
             case "MainMenu(Clone)":
                 cameraController.bindTo("Mouse");
+                bossController.SetLookTarg("Mouse");
                 gameManager.state = GameManage.GameState.MainMenu;
+                bossController.SparkleAndAppear(gameManager.source.Token);
                 MainCanvasControl(children, source.Token);
                 break;
             case "LevelSelect(Clone)":
@@ -253,6 +255,7 @@ public class UIManager : MonoBehaviour
 
             index -= 1;
             levelName.text = levelNames[index - 1];
+            bossController.ChangeBossFace(bossFaceNames[index - 1]);
             //maybe another function in here, oh yea one that interacts with ground mover for the backrounds, eventually
 
             if (index <= 1)
@@ -283,6 +286,7 @@ public class UIManager : MonoBehaviour
                 right.gameObject.SetActive(false);
             }
 
+
         }
 
         async void LoadBack()
@@ -308,6 +312,7 @@ public class UIManager : MonoBehaviour
         }
         loadRight();
         loadLeft();
+        bossController.ChangeBossFace(bossFaceNames[index - 1]);
         bossController.SetLookTarg("Player");
         left.onClick.AddListener(loadLeft);
         right.onClick.AddListener(loadRight);
@@ -385,7 +390,7 @@ public class UIManager : MonoBehaviour
                 while (stillInMenu)
                 {
                     if (token.IsCancellationRequested) return;
-                    UnityEngine.Debug.Log("Buffeting...");
+                    //UnityEngine.Debug.Log("Buffeting...");
                     if (nPress) Retry();
                     else if (yPress) ExitToMenu();
                     await Task.Delay(1);
@@ -404,7 +409,7 @@ public class UIManager : MonoBehaviour
         }
         else
         {
-            UnityEngine.Debug.Log("a");
+            //UnityEngine.Debug.Log("a");
             gameManager.state = GameManage.GameState.PlayingDead;
             winText.gameObject.SetActive(true);
             //gameManager.WinRound();
@@ -424,12 +429,12 @@ public class UIManager : MonoBehaviour
     {
         if(Input.GetKeyDown(KeyCode.Y))
         {
-            UnityEngine.Debug.Log("aa");
+            //UnityEngine.Debug.Log("aa");
             yPress = true;
         }
         if(Input.GetKeyDown(KeyCode.N))
         {
-            UnityEngine.Debug.Log("bb");
+            //UnityEngine.Debug.Log("bb");
             nPress = true;
         }
         if(gameManager.state == GameManage.GameState.LevelSelectMenu)

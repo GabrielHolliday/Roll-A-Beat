@@ -161,6 +161,7 @@ public class GameManage : MonoBehaviour
     private async void mainRunner()
     {
         cameraController.bindTo("Mouse");
+        boardController.SetLookTarg("Mouse");
         buildSongData();
         source = new CancellationTokenSource();
         uiManager.SwapTooAndCleanup(uiManager.MainCanvas);

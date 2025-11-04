@@ -112,10 +112,11 @@ public class RythmEngine : MonoBehaviour
     //---------------------------------called every beat, adjusts the enemy state table so the game knows what to do next
     private async void updateStates(double targTime, int beat)
     {
-        actOnState((60 / targetBpm) / 5);
+        
         while (AudioSettings.dspTime < targTime) await Task.Delay(1);
-
-        for (int i = 0; i < 4; i++) // change length to 8 once we figure out boss stuff
+        //Debug.Log("state trigger" + beat);
+        
+        for (int i = 0; i < 4; i++) // 
         {
             //Debug.Log(beat);
             //Debug.Log($"{beat}, {i}");
@@ -127,16 +128,18 @@ public class RythmEngine : MonoBehaviour
             }
 
         }
+        actOnState((60 / targetBpm) / 5);
 
     }
     //---------------------------------------------------------------
-    private async void Womp(double targTime, CancellationToken token)//tells other scripts when a beat happens, and any info on what they need to do that beat (ie boss state, works like a foriegn affairs officer)
+    private async void Womp(double targTime, CancellationToken token, int beat)//tells other scripts when a beat happens, and any info on what they need to do that beat (ie boss state, works like a foriegn affairs officer)
     {
         
         while (AudioSettings.dspTime < targTime) await Task.Delay(1);
+        
         if (token.IsCancellationRequested | beat < 0) return;
-
-        bossController.WompRecieve((int)char.GetNumericValue(songData[beat][4]));
+        Debug.Log("womp trigger re" + beat);
+        bossController.WompRecieve((int)char.GetNumericValue(songData[beat][4]), beat);
 
 
     }
@@ -196,17 +199,18 @@ public class RythmEngine : MonoBehaviour
     }
     private async void actOnState(double targTime)
     {
-        while (AudioSettings.dspTime < targTime) await Task.Delay(1);
+        //while (AudioSettings.dspTime < targTime) await Task.Delay(1);
         for (int i = 0; i < 4; i++)
         {
             GameObject curEnemy = activeEnemies[i];
             Transform chargePiece = curEnemy.transform.Find("FrontThing");//fix (should work maybe?)
-            int addToAngle = 0;
+            
             switch (enemyStates[i])
             {
                 case '0':
                     break;
                 case '1':
+                    Debug.Log("charging");
                     chargePiece.gameObject.SetActive(true);
                     break;
                 case '2':
@@ -285,7 +289,7 @@ public class RythmEngine : MonoBehaviour
                 bpmTargTime += bpsAddon;
                 beat += 1;
                 metronomes[cycleInt].PlayScheduled(bpmTargTime);
-                Womp(bpmTargTime, gameManage.source.Token);
+                Womp(bpmTargTime, gameManage.source.Token, beat);
                 if(beat >= 0) updateStates(bpmTargTime, beat);
                 //-----------------------------------------
                 if (cycleInt == 3)

@@ -96,7 +96,7 @@ public class BossController : MonoBehaviour
 
     private async void TestFunctions()
     {
-       
+        HideEyes();
         await Task.Delay(2000);
         ChangeBossFace("Wendigo");
         //StartIdleBounce();
@@ -112,12 +112,17 @@ public class BossController : MonoBehaviour
         switch (eyesToFollow)
         {
             case "Mouse":
+                Debug.Log("following mouse");
+                lEye.transform.localRotation = Quaternion.Euler(0, Input.mousePosition.y, 0);
+                rEye.transform.localRotation = Quaternion.Euler(0, Input.mousePosition.y, 0);
                 break;
             case "Player":
+                Debug.Log("following plr");
                 lEye.transform.LookAt(player.transform);
                 rEye.transform.LookAt(player.transform);
                 break;
             case "Camera":
+                Debug.Log("following camera");
                 lEye.transform.LookAt(camera.gameObject.transform);
                 rEye.transform.LookAt(camera.gameObject.transform);
                 break;
@@ -170,9 +175,9 @@ public class BossController : MonoBehaviour
         
     }
 
-    public async void WompRecieve(int state)//ran by rythm manager every beat, using a function and not an event cause data needs to be passed
+    public async void WompRecieve(int state, int beat)//ran by rythm manager every beat, using a function and not an event cause data needs to be passed
     {
-        Debug.Log(state);
+        Debug.Log("WompRecieve" + beat);
         mode = state;
         switch (state)//for special animations
         {
@@ -305,6 +310,7 @@ public class BossController : MonoBehaviour
                 intendedPos = basePos + new Vector3(0, 2, -8);
                 break;
         }
+        Debug.Log("anim1");
         //wendigoAnim
     }
     
@@ -370,7 +376,7 @@ public class BossController : MonoBehaviour
         CancellationToken token = curSc.Token;
         //
 
-        intendedPos = new Vector3(0, -40, 0);
+        intendedPos = new Vector3(0, -100, 0);
         //Debug.Log("you made it here");
         await Task.Delay(1000);
 
