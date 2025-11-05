@@ -42,7 +42,7 @@ public class UIManager : MonoBehaviour
 
     //data
   
-    private string[] bossFaceNames = { "SkullFace", "Wendigo" };
+    private string[] bossFaceNames = {"SkullFace" , "Wendigo"};
     //
     
     public async void SwapTooAndCleanup(Canvas toSwap)
@@ -203,10 +203,11 @@ public class UIManager : MonoBehaviour
         }
         */
 
-        foreach (Song song in gameManager.songs)
+        for (int i = 0; i < gameManager.songs.Count; i++)
         {
-            levelNames.Add(song.songBackground);
+            levelNames.Add(gameManager.songs[i].songBackground);
         }
+        
 
 
         //loady the data from the files to display
@@ -242,7 +243,8 @@ public class UIManager : MonoBehaviour
         if (blackScreen == null) return;
 
         levelName.text = levelNames[index - 1];
-        
+
+        bool ignore = true;
         void loadLeft()
         {
             if (index <= 1)
@@ -255,7 +257,7 @@ public class UIManager : MonoBehaviour
 
             index -= 1;
             levelName.text = levelNames[index - 1];
-            bossController.ChangeBossFace(bossFaceNames[index - 1]);
+            if(!ignore) bossController.ChangeBossFace(bossFaceNames[index - 1]);
             //maybe another function in here, oh yea one that interacts with ground mover for the backrounds, eventually
 
             if (index <= 1)
@@ -276,7 +278,7 @@ public class UIManager : MonoBehaviour
             index += 1;
 
             levelName.text = levelNames[index - 1];
-            bossController.ChangeBossFace(bossFaceNames[index - 1]);
+            if(!ignore) bossController.ChangeBossFace(bossFaceNames[index - 1]);
             //maybe another function in here, oh yea one that interacts with ground mover for the backrounds, eventually
 
 
@@ -312,7 +314,12 @@ public class UIManager : MonoBehaviour
         }
         loadRight();
         loadLeft();
-        bossController.ChangeBossFace(bossFaceNames[index - 1]);
+        loadLeft();
+        loadLeft();
+        loadLeft();
+        index = 1;
+        bossController.ChangeBossFace(bossFaceNames[0]);
+        ignore = false;
         bossController.SetLookTarg("Player");
         left.onClick.AddListener(loadLeft);
         right.onClick.AddListener(loadRight);

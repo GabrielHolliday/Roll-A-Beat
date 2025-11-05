@@ -98,7 +98,7 @@ public class BossController : MonoBehaviour
     {
         HideEyes();
         await Task.Delay(2000);
-        ChangeBossFace("Wendigo");
+        ChangeBossFace("SkullFace");
         //StartIdleBounce();
         await Task.Delay(4000);
         SparkleAndAppear(gameManage.source.Token);
@@ -113,8 +113,8 @@ public class BossController : MonoBehaviour
         {
             case "Mouse":
                 Debug.Log("following mouse");
-                lEye.transform.localRotation = Quaternion.Euler(0, Input.mousePosition.y, 0);
-                rEye.transform.localRotation = Quaternion.Euler(0, Input.mousePosition.y, 0);
+                lEye.transform.localRotation = Quaternion.Euler(Input.mousePosition.y / (Screen.height / 20) + 180, -(Input.mousePosition.x - Screen.width / 2) / (Screen.width / 20), 0);
+                rEye.transform.localRotation = Quaternion.Euler(Input.mousePosition.y / (Screen.height / 20)  + 180, -(Input.mousePosition.x - Screen.width / 2) / (Screen.width / 20), 0);
                 break;
             case "Player":
                 Debug.Log("following plr");

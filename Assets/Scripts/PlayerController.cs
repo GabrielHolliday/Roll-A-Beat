@@ -25,7 +25,7 @@ public class PlayerController : MonoBehaviour
     void Start()
     {
         rb = GetComponent<Rigidbody>();
-        respawnPos = transform.position + Vector3.up * 30;
+        respawnPos = transform.position + Vector3.up;
         winMessage.text = " ";
     }
 
@@ -36,6 +36,8 @@ public class PlayerController : MonoBehaviour
     {
         gameObject.transform.position = respawnPos;
         gameObject.SetActive(true);
+        movementX = 0;
+        movementY = 0;
     }
     void OnMove(InputValue movementValue)
     {

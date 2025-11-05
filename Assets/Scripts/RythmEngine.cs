@@ -17,14 +17,16 @@ public class RythmEngine : MonoBehaviour
 {
     //NOTE ON BUILDING LEVELS!!!!!!!!! 
     /*
-     * Q = 65 degrees Down
-     * A = 45 Degrees Down
-     * Z = 25 Degrees Down
+     * Q = 65 degrees UP
+     * A = 45 Degrees UP
+     * Z = 25 Degrees UP
      * 
      * 
-     * E = 65 Degrees Up
-     * D = 45 Degrees Up
-     * C = 25 Degrees Up 
+     * E = 65 Degrees DOWN
+     * D = 45 Degrees DOWN
+     * C = 25 Degrees DOWN 
+
+     * M = NORMAL
      */
 
     private bool runMetronome = true;
@@ -177,18 +179,25 @@ public class RythmEngine : MonoBehaviour
         Vector3 targVec3 = new Vector3(0, rotateAmmount, extra);
         Debug.Log($"{enemy} {targVec3}");
         //enemy.transform.rotation = Quaternion.Euler(targVec3);
-        utilityScript.Tween(enemy, enemy.transform.position, targVec3, (int)(30.0f / (float)targetBpm * 1000), UtilityScript.easingStyle.Cube, UtilityScript.easingDirection.Out, source.Token);//; stil a wip
+        utilityScript.Tween(enemy, enemy.transform.position, targVec3, (int)(28f / (float)targetBpm * 1000), UtilityScript.easingStyle.Cube, UtilityScript.easingDirection.Out, source.Token);//; stil a wip
 
 
     }
 
+    private bool forceUnquiet = false;
     public async void stopMusic(CancellationToken token)
     {
+        forceUnquiet = false;
         source.Cancel();
         runMetronome = false;
         for (int i = 0; i < 1100; i++)
         {
             if (token.IsCancellationRequested) return;
+            if (forceUnquiet == true)
+            {
+                track.Stop();
+                break;
+            }
             track.pitch -= 0.001f;
             track.volume -= 0.001f;
             await Task.Delay(2);
@@ -220,13 +229,19 @@ public class RythmEngine : MonoBehaviour
                     chargePiece.gameObject.SetActive(false);
                     if (laserFolder.transform.Find(curEnemy.name))
                     {
-                        Destroy(laserFolder.transform.Find(curEnemy.name).gameObject);
-                        Debug.Log($"Destroying... {curEnemy.name}");
-                        Debug.Log(laserFolder.transform.childCount);
-                        if(laserFolder.transform.childCount <= 1)
+                        for (int h = 0; h < laserFolder.transform.childCount; h++)
                         {
-                            cameraController.rumblin = false;
-                            cameraController.angleWeight = 0;
+                            if(laserFolder.transform.GetChild(h).name == curEnemy.name)
+                            {
+                                Destroy(laserFolder.transform.GetChild(h).gameObject);
+                                Debug.Log($"Destroying... {curEnemy.name}");
+                                Debug.Log(laserFolder.transform.childCount);
+                                if (laserFolder.transform.childCount <= 1)
+                                {
+                                    cameraController.rumblin = false;
+                                    cameraController.angleWeight = 0;
+                                }
+                            }
                         }
                     }
                     break;
@@ -289,8 +304,8 @@ public class RythmEngine : MonoBehaviour
                 bpmTargTime += bpsAddon;
                 beat += 1;
                 metronomes[cycleInt].PlayScheduled(bpmTargTime);
-                Womp(bpmTargTime, gameManage.source.Token, beat);
-                if(beat >= 0) updateStates(bpmTargTime, beat);
+                Womp(bpmTargTime, gameManage.source.Token, beat - 1);
+                if(beat >= 0) updateStates(bpmTargTime, beat -1);
                 //-----------------------------------------
                 if (cycleInt == 3)
                 {
@@ -355,11 +370,14 @@ public class RythmEngine : MonoBehaviour
     public async void StartRound(Song song, CancellationToken token)
     {
         if (song == null) return;
+        forceUnquiet = true;
         source = new CancellationTokenSource();
         targetBpm = song.songBPM;
         track.resource = song.songAudioTrack;
         songData = song.songMap;
         curSongLength = song.songLengthInBeats;
+        track.pitch =1;
+        track.volume =1;
 
         ClearScreen();
         Debug.Log("sdsd");
