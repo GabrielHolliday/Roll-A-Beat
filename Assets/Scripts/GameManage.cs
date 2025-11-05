@@ -214,7 +214,7 @@ public class GameManage : MonoBehaviour
     private void Awake()
     {
         
-        Application.targetFrameRate = 580;
+        Application.targetFrameRate = 360;
     }
     void Start()
     {
