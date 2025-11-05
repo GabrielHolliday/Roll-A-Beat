@@ -1,13 +1,10 @@
-using System;
+
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
-using NUnit.Framework;
 using TMPro;
-using Unity.Android.Gradle;
-using Unity.VisualScripting.Antlr3.Runtime;
-using UnityEditor;
+
+//using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -42,7 +39,7 @@ public class UIManager : MonoBehaviour
 
     //data
   
-    private string[] bossFaceNames = {"SkullFace" , "Wendigo"};
+    private string[] bossFaceNames = { "Wendigo", "SkullFace" };
     //
     
     public async void SwapTooAndCleanup(Canvas toSwap)
@@ -186,8 +183,9 @@ public class UIManager : MonoBehaviour
         //the game manager is responisible for double checking that the player has the song unlocked
 
 
-        List<string> levelNames = new List<string>();
-
+        List<string> levelNames = new List<string>(); //temp
+        levelNames.Add("Forest");
+        levelNames.Add("Dungeon");
         /*
         //temp list ----
         string[] temp = { "Dungeon", "Forrest", "High Seas" };
@@ -203,11 +201,12 @@ public class UIManager : MonoBehaviour
         }
         */
 
+        /*
         for (int i = 0; i < gameManager.songs.Count; i++)
         {
             levelNames.Add(gameManager.songs[i].songBackground);
         }
-        
+        */
 
 
         //loady the data from the files to display

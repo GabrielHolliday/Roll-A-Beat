@@ -1,11 +1,11 @@
 using UnityEngine;
 using System.Threading.Tasks;
 using System.Threading;
-using UnityEditor;
+//using UnityEditor;
 using System.Collections.Generic;
-using UnityEngine.WSA;
+
 using UnityEngine.Audio;
-using System.IO;
+
 using System;
 
 
@@ -160,6 +160,7 @@ public class GameManage : MonoBehaviour
 
     private async void mainRunner()
     {
+        
         cameraController.bindTo("Mouse");
         boardController.SetLookTarg("Mouse");
         buildSongData();
@@ -194,7 +195,7 @@ public class GameManage : MonoBehaviour
         //
     }
 
-
+    /*
     private void closingGame(PlayModeStateChange state)
     {
         if (state != PlayModeStateChange.ExitingPlayMode) return;
@@ -208,9 +209,16 @@ public class GameManage : MonoBehaviour
         source.Cancel();
 
     }
+    */
+
+    private void Awake()
+    {
+        
+        Application.targetFrameRate = 580;
+    }
     void Start()
     {
-        EditorApplication.playModeStateChanged += closingGame;//only for dev, CHANGE FOR BUILD!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        //EditorApplication.playModeStateChanged += closingGame;//only for dev, CHANGE FOR BUILD!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         
         mainRunner();
     }
