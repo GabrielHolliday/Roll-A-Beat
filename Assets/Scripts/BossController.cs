@@ -112,17 +112,17 @@ public class BossController : MonoBehaviour
         switch (eyesToFollow)
         {
             case "Mouse":
-                Debug.Log("following mouse");
+                //Debug.Log("following mouse");
                 lEye.transform.localRotation = Quaternion.Euler(Input.mousePosition.y / (Screen.height / 20) + 180, -(Input.mousePosition.x - Screen.width / 2) / (Screen.width / 20), 0);
                 rEye.transform.localRotation = Quaternion.Euler(Input.mousePosition.y / (Screen.height / 20)  + 180, -(Input.mousePosition.x - Screen.width / 2) / (Screen.width / 20), 0);
                 break;
             case "Player":
-                Debug.Log("following plr");
+                //Debug.Log("following plr");
                 lEye.transform.LookAt(player.transform);
                 rEye.transform.LookAt(player.transform);
                 break;
             case "Camera":
-                Debug.Log("following camera");
+                //Debug.Log("following camera");
                 lEye.transform.LookAt(camera.gameObject.transform);
                 rEye.transform.LookAt(camera.gameObject.transform);
                 break;
@@ -150,7 +150,7 @@ public class BossController : MonoBehaviour
         if (intendedPos != bossFaceParent.transform.position)
         {
             Vector3 moveVel = intendedPos - bossFaceParent.transform.position;
-            bossFaceParent.transform.position = Vector3.SmoothDamp(bossFaceParent.transform.position, intendedPos, ref moveVel, 0.1f, 80f);
+            bossFaceParent.transform.position = Vector3.SmoothDamp(bossFaceParent.transform.position, intendedPos, ref moveVel, 15.0f * Time.deltaTime, 80f);
 
             bossFaceParent.transform.rotation = Quaternion.RotateTowards(bossFaceParent.transform.rotation, Quaternion.Euler(intendedRot), 0.03f);
 
@@ -161,15 +161,15 @@ public class BossController : MonoBehaviour
         if (currentBossFace == null) return;
         if (intendedPosP1 != currentBossFace.transform.Find("Part1").transform.localPosition)
         {
-            Vector3 moveVelP1 = intendedPosP1 - currentBossFace.transform.Find("Part1").transform.localPosition;
-            currentBossFace.transform.Find("Part1").transform.localPosition = Vector3.SmoothDamp(currentBossFace.transform.Find("Part1").transform.localPosition, intendedPosP1, ref moveVelP1, 0.05f, 80f);
+            Vector3 moveVelP1 = intendedPosP1 - currentBossFace.transform.Find("Part1").transform.localPosition ;
+            currentBossFace.transform.Find("Part1").transform.localPosition = Vector3.SmoothDamp(currentBossFace.transform.Find("Part1").transform.localPosition, intendedPosP1, ref moveVelP1, 50f * Time.deltaTime, 80f);
         }
         
         //p2
         if (intendedPosP2 != currentBossFace.transform.Find("Part2").transform.localPosition)
         {
             Vector3 moveVelP2 = intendedPosP2 - currentBossFace.transform.Find("Part2").transform.localPosition;
-            currentBossFace.transform.Find("Part2").transform.localPosition = Vector3.SmoothDamp(currentBossFace.transform.Find("Part2").transform.localPosition, intendedPosP2, ref moveVelP2, 0.05f, 80f);
+            currentBossFace.transform.Find("Part2").transform.localPosition = Vector3.SmoothDamp(currentBossFace.transform.Find("Part2").transform.localPosition, intendedPosP2, ref moveVelP2, 50f * Time.deltaTime, 80f);
         }
      
         

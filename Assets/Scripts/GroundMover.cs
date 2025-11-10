@@ -161,7 +161,7 @@ public class GroundMover : MonoBehaviour
     {
         source.Cancel();
         runGroundAnimation = false;
-        playerController.speed = 0;
+        playerController.speed = 5;
     }
 
     public void Play(float speed, string level)
@@ -175,7 +175,7 @@ public class GroundMover : MonoBehaviour
         while(runGroundAnimation == true)
         {
             transform.position = new Vector3(transform.position.x, transform.position.y, -zOffset);
-            zOffset += 0.01f;
+            zOffset += 3 * Time.deltaTime;
             await Task.Delay(1);
             if (source.Token.IsCancellationRequested)
             {

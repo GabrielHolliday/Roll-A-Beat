@@ -81,7 +81,7 @@ public class UtilityScript : MonoBehaviour
             item.transform.localScale = Vector3.Lerp(startScale, endScale, lerpyPos);
             item.transform.localPosition = Vector3.Lerp(startPos, endPos, lerpyPos);
             item.transform.localRotation = Quaternion.Slerp(startRot, endRot, lerpyPos);
-            await Task.Delay(1);
+            await Task.Delay((int)(Time.deltaTime * 1000));
         }
         item.transform.localScale = endScale;
         item.transform.localPosition = endPos;
