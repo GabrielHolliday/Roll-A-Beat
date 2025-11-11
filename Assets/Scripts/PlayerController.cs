@@ -57,7 +57,7 @@ public class PlayerController : MonoBehaviour
             transform.position = new Vector3(0, 1, 0);
             gameObject.SetActive(false);
             
-            gameManage.PlayerDied();
+            StartCoroutine(gameManage.PlayerDied());
         }
     }
 
@@ -68,7 +68,7 @@ public class PlayerController : MonoBehaviour
         {
             transform.position = new Vector3(0, 1, 0);
             gameObject.SetActive(false);
-            gameManage.PlayerDied();
+            StartCoroutine(gameManage.PlayerDied());
             
         }
     }

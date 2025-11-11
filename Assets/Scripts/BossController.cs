@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine.Rendering;
 using System.Collections.Generic;
+using System.Collections;
 
 public class BossController : MonoBehaviour
 {
@@ -88,20 +89,20 @@ public class BossController : MonoBehaviour
 
         intendedPos = bossFaceParent.transform.position;
         intendedRot = new Vector3(-15, 0, 0);
-        TestFunctions();
+        StartCoroutine(TestFunctions());
        
         
     }
 
 
-    private async void TestFunctions()
+    private IEnumerator TestFunctions()
     {
         HideEyes();
-        await Task.Delay(2000);
-        ChangeBossFace("SkullFace");
+        yield return new WaitForSeconds(2f);
+        StartCoroutine(ChangeBossFace("SkullFace"));
         //StartIdleBounce();
-        await Task.Delay(4000);
-        SparkleAndAppear(gameManage.source.Token);
+        yield return new WaitForSeconds(4f);
+        StartCoroutine(SparkleAndAppear(gameManage.source.Token));
     }
 
     private void adjustEyes()
@@ -175,7 +176,7 @@ public class BossController : MonoBehaviour
         
     }
 
-    public async void WompRecieve(int state, int beat)//ran by rythm manager every beat, using a function and not an event cause data needs to be passed
+    public void WompRecieve(int state, int beat)//ran by rythm manager every beat, using a function and not an event cause data needs to be passed
     {
         Debug.Log("WompRecieve" + beat);
         mode = state;
@@ -201,21 +202,21 @@ public class BossController : MonoBehaviour
     private bool stop =false;
     private bool flip =false;
 
-    public async void StartIdleBounce()
+    public IEnumerator StartIdleBounce()
     {
         while(!stop)
         {
             if (flip) intendedPos = new Vector3(intendedPos.x, intendedPos.y + 3, intendedPos.z);
             else intendedPos = new Vector3(intendedPos.x, intendedPos.y - 3, intendedPos.z);
             flip = !flip;
-            await Task.Delay(5000);
+            yield return new WaitForSeconds(5f);
 
         }
         stop = false;
 
     }
 
-    public async void StopIdleBounce()
+    public void StopIdleBounce()
     {
         stop = true;
     }
@@ -253,16 +254,16 @@ public class BossController : MonoBehaviour
         StopIdleBounce();
     }
 
-    public async void SparkleAndAppear(CancellationToken token)
+    public IEnumerator SparkleAndAppear(CancellationToken token)
     {
-        Sparkle(token);
-        await Task.Delay(150);
+        StartCoroutine(Sparkle(token));
+        yield return new WaitForSeconds(0.15f);
         lIris.transform.Find("Standard").gameObject.SetActive(true);
         rIris.transform.Find("Standard").gameObject.SetActive(true);
     }
 
 
-    public async void Sparkle(CancellationToken token)
+    public IEnumerator Sparkle(CancellationToken token)
     {
 
         GameObject lSpark = lIris.transform.Find("Sparkle").gameObject;
@@ -273,25 +274,20 @@ public class BossController : MonoBehaviour
         lSpark.SetActive(true);
         rSpark.SetActive(true);
 
-        utilityScript.Tween(lSpark, lSpark.transform.localPosition, lSpark.transform.localEulerAngles, sparkleIrisBaseSize, 100, UtilityScript.easingStyle.Cube, UtilityScript.easingDirection.Out, gameManage.source.Token);
-        await utilityScript.Tween(rSpark, rSpark.transform.localPosition, rSpark.transform.localEulerAngles, sparkleIrisBaseSize, 100, UtilityScript.easingStyle.Cube, UtilityScript.easingDirection.Out, gameManage.source.Token);
+        StartCoroutine(utilityScript.Tween(lSpark, lSpark.transform.localPosition, lSpark.transform.localEulerAngles, sparkleIrisBaseSize, 300, UtilityScript.easingStyle.Cube, UtilityScript.easingDirection.Out, gameManage.source.Token));
+        yield return StartCoroutine(utilityScript.Tween(rSpark, rSpark.transform.localPosition, rSpark.transform.localEulerAngles, sparkleIrisBaseSize, 300, UtilityScript.easingStyle.Cube, UtilityScript.easingDirection.Out, gameManage.source.Token));
         Debug.Log("You're here");
-        await Task.Delay(300);
-        if (token.IsCancellationRequested) return;
-
-        utilityScript.Tween(lSpark, lSpark.transform.localPosition, lSpark.transform.localEulerAngles, Vector3.up, 300, UtilityScript.easingStyle.Cube, UtilityScript.easingDirection.Out, gameManage.source.Token);
-        await utilityScript.Tween(rSpark, rSpark.transform.localPosition, rSpark.transform.localEulerAngles, Vector3.up, 300, UtilityScript.easingStyle.Cube, UtilityScript.easingDirection.Out, gameManage.source.Token);
-        if (token.IsCancellationRequested) return;
+        yield return new WaitForSeconds(0.3f);
+        StartCoroutine(utilityScript.Tween(lSpark, lSpark.transform.localPosition, lSpark.transform.localEulerAngles, Vector3.up, 2000, UtilityScript.easingStyle.Cube, UtilityScript.easingDirection.Out, gameManage.source.Token));
+        yield return StartCoroutine(utilityScript.Tween(rSpark, rSpark.transform.localPosition, rSpark.transform.localEulerAngles, Vector3.up, 2000, UtilityScript.easingStyle.Cube, UtilityScript.easingDirection.Out, gameManage.source.Token));
+        
         lSpark.SetActive(false);
         rSpark.SetActive(false);
 
     }//need to update tween to be able to scale size (Done!! Yahoo!)
 
 
-    public async void SetToRedSparkle()
-    {
-
-    }
+    
 
 
 
@@ -361,9 +357,9 @@ public class BossController : MonoBehaviour
 
     private List<CancellationTokenSource> sources = new List<CancellationTokenSource>();
 
-    public async void ChangeBossFace(string changeTo)
+    public IEnumerator ChangeBossFace(string changeTo)
     {
-        if (currentBossFace != null && currentBossFace.name == changeTo) return;
+        if (currentBossFace != null && currentBossFace.name == changeTo) yield break;
         //Cancelations
         for (int i = 0; i < sources.Count; i++)
         {
@@ -378,9 +374,9 @@ public class BossController : MonoBehaviour
 
         intendedPos = new Vector3(0, -100, 0);
         //Debug.Log("you made it here");
-        await Task.Delay(1000);
+        yield return new WaitForSeconds(1f);
 
-        if (token.IsCancellationRequested) return;
+        
         //Debug.Log("now here");
         for (int i = 0; i < bossFaceParent.transform.childCount; i++)
         {
@@ -401,8 +397,8 @@ public class BossController : MonoBehaviour
         intendedPosP2 = currentBossFace.transform.Find("Part2").transform.localPosition;
         intendedPosP1 = currentBossFace.transform.Find("Part1").transform.localPosition;
         //Debug.Log("and even here");
-        await Task.Delay(1000);
-        if (token.IsCancellationRequested) return;
+        yield return new WaitForSeconds(1f);
+        if (token.IsCancellationRequested) yield break;
         sources.Remove(curSc);
     }
 
@@ -421,14 +417,14 @@ public class BossController : MonoBehaviour
     //=======================================================================================================
 
     // Update is called once per frame
-    private async void FixedPerBPM()
+    private IEnumerator FixedPerBPM()
     {
         int bpm = 0;
         if (rythmEngine.targetBpm < 60) bpm = 60;
         else bpm = rythmEngine.targetBpm;
 
-        await Task.Delay(100 / bpm);
-        if (gameManage.source.Token.IsCancellationRequested) return;
+        yield return new WaitForSeconds(0.1f / bpm);
+       
         //everything you need to do
 
 

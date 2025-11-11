@@ -2,6 +2,7 @@ using UnityEngine;
 using System;
 using System.Threading.Tasks;
 using Unity.Mathematics;
+using System.Collections;
 
 public class CameraController : MonoBehaviour
 {
@@ -26,10 +27,11 @@ public class CameraController : MonoBehaviour
     public int angleWeight = 0;
 
 
-    private async void rumble()
+    /*
+    private IEnumerator rumble()
     {
-        if (rumblin) return;
-    
+        if (rumblin) yield break;
+
         rumblin = true;
 
         while (rumblin)
@@ -44,28 +46,27 @@ public class CameraController : MonoBehaviour
                 {
                     rumbleInt = Mathf.Lerp(stPs, enPs, i / cycleTime);
                     baselineOffset = utilityScript.Clamp(rumbleInt, 0.01f, -0.01f);
-                    await Task.Delay(1);
+                    yield return null;
                 }
                 rumbleInt = -rumbleInt;
             }
-        }    
+        }
     }
+    */
 
     //
 
     
 
-    public async void addRumble(float amount)
+    public void addRumble(float amount)
     {
-        
-        
-        rumble();
-      
+
+
     }
 
     static string boundTo = "None";
 
-    public async void bindTo(string typeOfBind)
+    public void bindTo(string typeOfBind)
     {
         boundTo = (string)typeOfBind;
 

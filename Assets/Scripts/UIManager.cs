@@ -1,4 +1,5 @@
 
+using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -42,7 +43,7 @@ public class UIManager : MonoBehaviour
     private string[] bossFaceNames = { "Wendigo", "SkullFace" };
     //
     
-    public async void SwapTooAndCleanup(Canvas toSwap)
+    public void SwapTooAndCleanup(Canvas toSwap)
     {
         if (curCanvas != null) Destroy(curCanvas.gameObject);
         source.Cancel();
@@ -65,7 +66,7 @@ public class UIManager : MonoBehaviour
                 cameraController.bindTo("Mouse");
                 bossController.SetLookTarg("Mouse");
                 gameManager.state = GameManage.GameState.MainMenu;
-                bossController.SparkleAndAppear(gameManager.source.Token);
+                StartCoroutine(bossController.SparkleAndAppear(gameManager.source.Token));
                 MainCanvasControl(children, source.Token);
                 break;
             case "LevelSelect(Clone)":
@@ -79,7 +80,7 @@ public class UIManager : MonoBehaviour
             case "PostGame(Clone)":
                 cameraController.bindTo("Ball");
                 
-                PostGameCanvasControl(children, source.Token);
+                StartCoroutine(PostGameCanvasControl(children, source.Token));
                 break;
         }
     }
@@ -124,25 +125,29 @@ public class UIManager : MonoBehaviour
 
         blackScreen.CrossFadeAlpha(0, 0.5f, true);
 
-        async void transitionToLevelSelect()
+        void p1()
+        {
+            StartCoroutine(transitionToLevelSelect());
+        }
+        IEnumerator transitionToLevelSelect()
         {
             UnityEngine.Debug.Log("e");
             playButton.onClick.RemoveAllListeners();
             playButton.gameObject.SetActive(false);
             settingsButton.gameObject.SetActive(false);
             onlyShowBoss.gameObject.SetActive(true);
-            bossController.Sparkle(gameManager.source.Token);
+            StartCoroutine(bossController.Sparkle(gameManager.source.Token));
             //bossController.SetLookTarg("Camera");
-            await Task.Delay(2000);
+            yield return new WaitForSeconds(2);
             blackScreen.CrossFadeAlpha(1, 0.7f, true);
             //play laugh sound
 
             //
 
             //the animation 
-            await Task.Delay(2000);
+            yield return new WaitForSeconds(2);
             onlyShowBoss.gameObject.SetActive(false);
-            if (token.IsCancellationRequested) return;
+            
             //
 
             //actual stuff
@@ -150,7 +155,7 @@ public class UIManager : MonoBehaviour
             //
         }
         
-        playButton.onClick.AddListener(transitionToLevelSelect);
+        playButton.onClick.AddListener(p1);
         blackScreen.CrossFadeAlpha(0, 0.7f, true);
         UnityEngine.Debug.Log(playButton.onClick.GetPersistentEventCount());
         
@@ -256,7 +261,7 @@ public class UIManager : MonoBehaviour
 
             index -= 1;
             levelName.text = levelNames[index - 1];
-            if(!ignore) bossController.ChangeBossFace(bossFaceNames[index - 1]);
+            if(!ignore) StartCoroutine(bossController.ChangeBossFace(bossFaceNames[index - 1]));
             //maybe another function in here, oh yea one that interacts with ground mover for the backrounds, eventually
 
             if (index <= 1)
@@ -277,7 +282,7 @@ public class UIManager : MonoBehaviour
             index += 1;
 
             levelName.text = levelNames[index - 1];
-            if(!ignore) bossController.ChangeBossFace(bossFaceNames[index - 1]);
+            if(!ignore) StartCoroutine(bossController.ChangeBossFace(bossFaceNames[index - 1]));
             //maybe another function in here, oh yea one that interacts with ground mover for the backrounds, eventually
 
 
@@ -289,23 +294,18 @@ public class UIManager : MonoBehaviour
 
 
         }
-
-        async void LoadBack()
+        void LoadBack()
         {
             blackScreen.CrossFadeAlpha(1, 0.7f, true);
-            await Task.Delay(1500);
-            if (token.IsCancellationRequested) return;
             SwapTooAndCleanup(MainCanvas);
         }
 
-        async void LoadPlay()
+        void LoadPlay()
         {
             startRound.onClick.RemoveAllListeners();
             for (int i = 0; i < children.Count; i++)
             {
                 children[i].gameObject.GetComponent<Image>().CrossFadeAlpha(0, 0.7f, true);
-                await Task.Delay(700);
-                if (token.IsCancellationRequested) return;
                 gameManager.requestRoundStart(index, 1);
                 SwapTooAndCleanup(playModeCanvas);
             }
@@ -317,7 +317,7 @@ public class UIManager : MonoBehaviour
         loadLeft();
         loadLeft();
         index = 1;
-        bossController.ChangeBossFace(bossFaceNames[0]);
+        StartCoroutine(bossController.ChangeBossFace(bossFaceNames[0]));
         ignore = false;
         bossController.SetLookTarg("Player");
         left.onClick.AddListener(loadLeft);
@@ -330,9 +330,9 @@ public class UIManager : MonoBehaviour
     }
     private bool yPress = false;
     private bool nPress = false;
-    private async Task PostGameCanvasControl(List<GameObject> children, CancellationToken token)
+    private IEnumerator PostGameCanvasControl(List<GameObject> children, CancellationToken token)
     {
-        if (curCanvas == null) return;
+        if (curCanvas == null) yield break;
         //UnityEngine.Debug.Log("uuu");
 
         TextMeshProUGUI internalText = null;
@@ -366,7 +366,7 @@ public class UIManager : MonoBehaviour
         {
             gameManager.state = GameManage.GameState.PlayingDead;
             internalText.gameObject.SetActive(true);
-            async void flickerText()
+            IEnumerator flickerText()
             {
                 while (stillInMenu)
                 {
@@ -374,44 +374,44 @@ public class UIManager : MonoBehaviour
                     if (flipFlop) internalText.CrossFadeAlpha(0.3f, 1f, true);
                     else internalText.CrossFadeAlpha(1f, 1f, true);
                     flipFlop = !flipFlop;
-                    await Task.Delay(1000);
-                    if (token.IsCancellationRequested) return;
+                    yield return new WaitForSeconds(1f);
+                    
                 }
 
             }
 
 
-            async void Retry()
+            IEnumerator Retry()
             {
                 stillInMenu = false;
                 internalText.CrossFadeAlpha(0.3f, 0.7f, true);
-                await Task.Delay(700);
-                if (token.IsCancellationRequested) return;
+                yield return new WaitForSeconds(0.7f);
+            
                 gameManager.requestRoundStart(index, 1);
                 SwapTooAndCleanup(playModeCanvas);
             }
 
-            async void checky()
+            IEnumerator checky()
             {
                 while (stillInMenu)
                 {
-                    if (token.IsCancellationRequested) return;
+
                     //UnityEngine.Debug.Log("Buffeting...");
-                    if (nPress) Retry();
+                    if (nPress) StartCoroutine(Retry());
                     else if (yPress) ExitToMenu();
-                    await Task.Delay(1);
+                    yield return null;
                 }
             }
 
 
-            async void ExitToMenu()
+            void ExitToMenu()
             {
                 stillInMenu = false;
                 SwapTooAndCleanup(LevelSelCanvas);
             }
 
-            checky();
-            flickerText();
+            StartCoroutine(checky());
+            StartCoroutine(flickerText());
         }
         else
         {
@@ -419,8 +419,7 @@ public class UIManager : MonoBehaviour
             gameManager.state = GameManage.GameState.PlayingDead;
             winText.gameObject.SetActive(true);
             //gameManager.WinRound();
-            await Task.Delay(3000);
-            if (token.IsCancellationRequested) return;
+            yield return new WaitForSeconds(3f);
             SwapTooAndCleanup(LevelSelCanvas);
             
 

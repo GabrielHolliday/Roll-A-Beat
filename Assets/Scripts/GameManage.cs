@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using UnityEngine.Audio;
 
 using System;
+using System.Collections;
 
 
 
@@ -113,10 +114,7 @@ public class GameManage : MonoBehaviour
     public GameState state = GameState.MainMenu;
     
     //
-    private async void wait(int milliseconds)
-    {
-        await Task.Delay(milliseconds);
-    }
+    
 
     //external requests
 
@@ -147,18 +145,18 @@ public class GameManage : MonoBehaviour
         //playerController.Respawn();
     }
 
-    public async void PlayerDied()
+    public IEnumerator PlayerDied()
     {
-        if (state != GameState.PlayingAlive) return;
-        rythmEngine.stopMusic(source.Token);
-        await Task.Delay(1000);
+        if (state != GameState.PlayingAlive) yield break;
+        StartCoroutine(rythmEngine.stopMusic(source.Token));
+        yield return new WaitForSeconds(1f);
         uiManager.SwapTooAndCleanup(uiManager.PostGameCanvas);
 
     }
 
     //
 
-    private async void mainRunner()
+    private void mainRunner()
     {
         
         cameraController.bindTo("Mouse");
@@ -166,7 +164,7 @@ public class GameManage : MonoBehaviour
         buildSongData();
         source = new CancellationTokenSource();
         uiManager.SwapTooAndCleanup(uiManager.MainCanvas);
-        await Task.Delay(7000);
+        
         //rythmEngine.StartRound(0, source.Token);
     }
 
@@ -179,17 +177,17 @@ public class GameManage : MonoBehaviour
         //any unlocking or whatnot
     }    
 
-    private async void StartRound(int songIndex)
+    private void StartRound(int songIndex)
     {
         playerController.Respawn();
         cameraController.bindTo("Ball");
         Song curSong = songs.Find(Song => Song.songIndex == songIndex);
-        rythmEngine.StartRound(curSong, source.Token);
+        StartCoroutine(rythmEngine.StartRound(curSong, source.Token));
         boardController.requestReset();
         rythmEngine.ClearScreen();
         //playerController.speed = 0.2f;
         //maybe add some checking later?
-        boardController.SparkleAndAppear(source.Token);
+        StartCoroutine(boardController.SparkleAndAppear(source.Token));
         groundMover.Play(curSong.songGroundSpeed, curSong.songBackground);
         state = GameState.PlayingAlive;
         //
@@ -213,7 +211,7 @@ public class GameManage : MonoBehaviour
 
     private void Awake()
     {
-        
+
         Application.targetFrameRate = 360;
     }
     void Start()

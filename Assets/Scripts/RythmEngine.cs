@@ -102,7 +102,7 @@ public class RythmEngine : MonoBehaviour
         Vector3 targVec3 = new Vector3(enemySpawnLocations[pos].x, 1, enemySpawnLocations[pos].z);
         //Debug.Log(curEnemyBody.transform.position.y);
 
-        utilityScript.Tween(curEnemyBody, targVec3, angle, 700, UtilityScript.easingStyle.Cube, UtilityScript.easingDirection.Out, source.Token);
+        StartCoroutine(utilityScript.Tween(curEnemyBody, targVec3, angle, 700, UtilityScript.easingStyle.Cube, UtilityScript.easingDirection.Out, source.Token));
 
 
 
@@ -112,10 +112,10 @@ public class RythmEngine : MonoBehaviour
     //--------------------------------------------------------------------------------------------------------------------------------------
 
     //---------------------------------called every beat, adjusts the enemy state table so the game knows what to do next
-    private async void updateStates(double targTime, int beat)
+    private IEnumerator updateStates(double targTime, int beat)
     {
         
-        while (AudioSettings.dspTime < targTime) await Task.Delay(1);
+        while (AudioSettings.dspTime < targTime) yield return null;
         //Debug.Log("state trigger" + beat);
         
         for (int i = 0; i < 4; i++) // 
@@ -134,12 +134,12 @@ public class RythmEngine : MonoBehaviour
 
     }
     //---------------------------------------------------------------
-    private async void Womp(double targTime, CancellationToken token, int beat)//tells other scripts when a beat happens, and any info on what they need to do that beat (ie boss state, works like a foriegn affairs officer)
+    private IEnumerator Womp(double targTime, CancellationToken token, int beat)//tells other scripts when a beat happens, and any info on what they need to do that beat (ie boss state, works like a foriegn affairs officer)
     {
         
-        while (AudioSettings.dspTime < targTime) await Task.Delay(1);
+        while (AudioSettings.dspTime < targTime) yield return null;
         
-        if (token.IsCancellationRequested | beat < 0) return;
+        if (token.IsCancellationRequested | beat < 0) yield break;
         Debug.Log("womp trigger re" + beat);
         bossController.WompRecieve((int)char.GetNumericValue(songData[beat][4]), beat);
 
@@ -168,7 +168,7 @@ public class RythmEngine : MonoBehaviour
     //-------------------------------------------------------------------------------
 
 
-    private async void rotateEnemy(GameObject enemy, int rotateAmmount)
+    private void rotateEnemy(GameObject enemy, int rotateAmmount)
     {
         int extra = 0;
         if (enemy.transform.position.x > 0)
@@ -179,41 +179,41 @@ public class RythmEngine : MonoBehaviour
         Vector3 targVec3 = new Vector3(0, rotateAmmount, extra);
         Debug.Log($"{enemy} {targVec3}");
         //enemy.transform.rotation = Quaternion.Euler(targVec3);
-        utilityScript.Tween(enemy, enemy.transform.position, targVec3, (int)(28f / (float)targetBpm * 1000), UtilityScript.easingStyle.Cube, UtilityScript.easingDirection.Out, source.Token);//; stil a wip
+        StartCoroutine(utilityScript.Tween(enemy, enemy.transform.position, targVec3, (int)(28f / (float)targetBpm * 1000), UtilityScript.easingStyle.Cube, UtilityScript.easingDirection.Out, source.Token));//; stil a wip
 
 
     }
 
     private bool forceUnquiet = false;
-    public async void stopMusic(CancellationToken token)
+    public IEnumerator stopMusic(CancellationToken token)
     {
         forceUnquiet = false;
         source.Cancel();
         runMetronome = false;
-        for (int i = 0; i < 1100; i++)
+        while(track.pitch > 0.01f)
         {
-            if (token.IsCancellationRequested) return;
+            
             if (forceUnquiet == true)
             {
                 track.Stop();
                 break;
             }
-            track.pitch -= 0.001f;
-            track.volume -= 0.001f;
-            await Task.Delay(2);
+            track.pitch -= 0.01f * Time.deltaTime;
+            track.volume -= 0.01f * Time.deltaTime;
+            yield return null;
         }
         track.Stop();
         track.pitch = 1;
         track.volume = 1;
     }
-    private async void actOnState(double targTime)
+    private void actOnState(double targTime)
     {
         //while (AudioSettings.dspTime < targTime) await Task.Delay(1);
         for (int i = 0; i < 4; i++)
         {
             GameObject curEnemy = activeEnemies[i];
             Transform chargePiece = curEnemy.transform.Find("FrontThing");//fix (should work maybe?)
-            
+
             switch (enemyStates[i])
             {
                 case '0':
@@ -231,7 +231,7 @@ public class RythmEngine : MonoBehaviour
                     {
                         for (int h = 0; h < laserFolder.transform.childCount; h++)
                         {
-                            if(laserFolder.transform.GetChild(h).name == curEnemy.name)
+                            if (laserFolder.transform.GetChild(h).name == curEnemy.name)
                             {
                                 Destroy(laserFolder.transform.GetChild(h).gameObject);
                                 Debug.Log($"Destroying... {curEnemy.name}");
@@ -270,6 +270,7 @@ public class RythmEngine : MonoBehaviour
             }
 
         }
+        
     }
 
     //ye olle bread and butter, meant to be a READ ONLY type jawn, pings beat changes------------------------- BE VERY CAREFULL CHANGING CODE, WILL BREAK WHOLE GAME IF NO WORK
@@ -296,7 +297,7 @@ public class RythmEngine : MonoBehaviour
                     //song end
                     Debug.Log("we out");
                     runMetronome = false;
-                    stopMusic(gameManage.source.Token);
+                    StartCoroutine(stopMusic(gameManage.source.Token));
                     gameManage.WinRound();
                     break;
 
@@ -304,8 +305,8 @@ public class RythmEngine : MonoBehaviour
                 bpmTargTime += bpsAddon;
                 beat += 1;
                 metronomes[cycleInt].PlayScheduled(bpmTargTime);
-                Womp(bpmTargTime, gameManage.source.Token, beat - 1);
-                if(beat >= 0) updateStates(bpmTargTime, beat -1);
+                StartCoroutine(Womp(bpmTargTime, gameManage.source.Token, beat - 1));
+                if(beat >= 0) StartCoroutine(updateStates(bpmTargTime, beat -1));
                 //-----------------------------------------
                 if (cycleInt == 3)
                 {
@@ -367,9 +368,9 @@ public class RythmEngine : MonoBehaviour
         }
     }
 
-    public async void StartRound(Song song, CancellationToken token)
+    public IEnumerator StartRound(Song song, CancellationToken token)
     {
-        if (song == null) return;
+        if (song == null) yield break;
         forceUnquiet = true;
         source = new CancellationTokenSource();
         targetBpm = song.songBPM;
@@ -388,11 +389,11 @@ public class RythmEngine : MonoBehaviour
         //--
         for (int i = 0; i < 4; i++)
         {
-            await Task.Delay(500);
+            yield return new WaitForSeconds(0.5f);
             if (i > 1) myCoolAngle = new Vector3(0, 0, 180);
             spawnEnemy(i, myCoolAngle);
         }
-        await Task.Delay(2000);
+        yield return new WaitForSeconds(2f);
         bpmCoroutine = BPMManager(targetBpm, -50);
         StartCoroutine(bpmCoroutine);
     }

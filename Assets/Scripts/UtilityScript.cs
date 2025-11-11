@@ -53,22 +53,19 @@ public class UtilityScript : MonoBehaviour
     }
 
     private List<GameObject> alreadyTweening = new List<GameObject>();
-    public async Task Tween(GameObject item, Vector3 endPos, Vector3 endEuler, Vector3 endScale,  int milliseconds, easingStyle style, easingDirection direction, CancellationToken token)
-    {
-        if (item == null | alreadyTweening.Contains(item)) return;
-        alreadyTweening.Add(item);
 
+    public IEnumerator Tween(GameObject item, Vector3 endPos, Vector3 endEuler, Vector3 endScale, int milliseconds, easingStyle style, easingDirection direction, CancellationToken token)
+    {
+        if (item == null | alreadyTweening.Contains(item)) yield break;
+        alreadyTweening.Add(item);
+        float time = 0;
         Vector3 startScale = item.transform.localScale;
         Vector3 startPos = item.transform.localPosition;
         Quaternion startRot = item.transform.localRotation;
         Quaternion endRot = Quaternion.Euler(endEuler);
-        for (int i = 0; i <= milliseconds; i++)
+        while (time < milliseconds)
         {
-            if (token.IsCancellationRequested)
-            {
-                return;
-            }
-            float lerpyPos = (float)i / milliseconds;
+            float lerpyPos = time / milliseconds;
             switch (style)
             {
                 case easingStyle.None:
@@ -81,28 +78,27 @@ public class UtilityScript : MonoBehaviour
             item.transform.localScale = Vector3.Lerp(startScale, endScale, lerpyPos);
             item.transform.localPosition = Vector3.Lerp(startPos, endPos, lerpyPos);
             item.transform.localRotation = Quaternion.Slerp(startRot, endRot, lerpyPos);
-            await Task.Delay((int)(Time.deltaTime * 1000));
+            time += Time.deltaTime * 1000;
+            yield return null;
         }
         item.transform.localScale = endScale;
         item.transform.localPosition = endPos;
         item.transform.localRotation = endRot;
         alreadyTweening.Remove(item);
     }
-    public async Task Tween(GameObject item, Vector3 endPos, Vector3 endEuler, int milliseconds, easingStyle style, easingDirection direction, CancellationToken token) 
+    
+    public IEnumerator Tween(GameObject item, Vector3 endPos, Vector3 endEuler,  int milliseconds, easingStyle style, easingDirection direction, CancellationToken token)
     {
-        if (item == null | alreadyTweening.Contains(item)) return;
+        if (item == null | alreadyTweening.Contains(item)) yield break;
         alreadyTweening.Add(item);
-
+        float time = 0;
+        Vector3 startScale = item.transform.localScale;
         Vector3 startPos = item.transform.localPosition;
         Quaternion startRot = item.transform.localRotation;
         Quaternion endRot = Quaternion.Euler(endEuler);
-        for (int i = 0; i <= milliseconds; i++)
+        while(time < milliseconds)
         {
-            if(token.IsCancellationRequested)
-            {
-                return;
-            }
-            float lerpyPos = (float)i / milliseconds;
+            float lerpyPos = time / milliseconds;
             switch (style)
             {
                 case easingStyle.None:
@@ -112,14 +108,20 @@ public class UtilityScript : MonoBehaviour
                     else if (direction == easingDirection.Out) lerpyPos = 1.0f - Mathf.Pow(1.0f - lerpyPos, 3.0f);
                     break;
             }
+            
             item.transform.localPosition = Vector3.Lerp(startPos, endPos, lerpyPos);
             item.transform.localRotation = Quaternion.Slerp(startRot, endRot, lerpyPos);
-            await Task.Delay(1);
+            time += Time.deltaTime * 1000;
+            yield return null;
         }
+        
         item.transform.localPosition = endPos;
         item.transform.localRotation = endRot;
         alreadyTweening.Remove(item);
     }
+ 
+    
+    /*
     public async Task Tween(GameObject item, Vector3 endPos, int milliseconds, CancellationToken token) 
     {
         if (item == null | alreadyTweening.Contains(item)) return;
@@ -136,43 +138,12 @@ public class UtilityScript : MonoBehaviour
             float lerpyPos = (float)i / milliseconds;
             item.transform.localPosition = Vector3.Lerp(startPos, endPos, lerpyPos);
       
-            await Task.Delay(1);
+            await Task.Delay((int)(Time.deltaTime * 1000));
         }
         item.transform.localPosition = endPos;
         alreadyTweening.Remove(item);
     }
-
-
-    public void tweenNumber(ref float num, float endNum, int milliseconds, easingDirection easeingDir, easingStyle easingSty)
-    {
-        float startPos = num;
-        for (int i = 0; i <= milliseconds; i++)
-        {
-            float lerpyPos = (float)i / milliseconds;
-            switch (easingSty)
-            {
-                case easingStyle.None:
-                    break;
-                case easingStyle.Cube:
-                    if (easeingDir == easingDirection.In) lerpyPos = lerpyPos * lerpyPos * lerpyPos; // no ^ in c#? :(
-                    else if (easeingDir == easingDirection.Out) lerpyPos = 1.0f - Mathf.Pow(1.0f - lerpyPos, 3.0f);
-                    break;
-            }
-
-            num = Mathf.Lerp(startPos, endNum, lerpyPos);
-            Task task = WaitFor(100);//in milliseconds
-            task.Wait();
-
-        }
-        num = endNum;
-    }
-    
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-
-    }
-
+    */
     // Update is called once per frame
     void Update()
     {

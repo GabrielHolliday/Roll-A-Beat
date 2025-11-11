@@ -6,6 +6,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using System.Threading.Tasks;
 using System.Threading;
+using System.Collections;
 
 public class GroundMover : MonoBehaviour
 {
@@ -40,20 +41,17 @@ public class GroundMover : MonoBehaviour
         xPosRange = mainGround.transform.localScale.x;
         zSpawnPos = mainGround.transform.localScale.z / 2 + zSpawnPos;
         zRemovePos = 0 - zSpawnPos;
-        LoadSpires();
-        moveGround(source.Token);
-        
-        
+        StartCoroutine(LoadSpires());
+        StartCoroutine(moveGround(source.Token));   
     }
 
-    private async void DestroyIn(int milliseconds, GameObject toRemove)
+    private IEnumerator DestroyIn(int milliseconds, GameObject toRemove)
     {
-        await Task.Delay(milliseconds);
-        DestroyImmediate(toRemove);
-
+        yield return new WaitForSeconds((float)milliseconds / 1000f);
+        Destroy(toRemove);
     }
 
-    private async void LoadSpires()
+    private IEnumerator LoadSpires()
     {
         Vector3 targp = new Vector3(9999, -100, 999);
         for (int i = 0; i < activeSpires.Length; i++)
@@ -64,10 +62,10 @@ public class GroundMover : MonoBehaviour
             statuses[i] = 1;
 
         }
-        generateSpire(source.Token);
+        StartCoroutine(generateSpire(source.Token));
         for (int i = 0; i < activeSpires.Length; i++) //initial load up
         {
-            await Task.Delay(350);
+            yield return new WaitForSeconds(0.3f);
             //Debug.Log("loading");
             if ((i + 1) % 3 == 0)
             {
@@ -86,15 +84,12 @@ public class GroundMover : MonoBehaviour
             }
 
             Vector3 targPos = new Vector3(activeSpires[i].transform.localPosition.x, -activeSpires[i].transform.localScale.y / 2, zSpawnPos + zOffset);
-            utilityScript.Tween(activeSpires[i], targPos, new Vector3(0, 180, 0), 500, UtilityScript.easingStyle.Cube, UtilityScript.easingDirection.Out, source.Token);
+            StartCoroutine(utilityScript.Tween(activeSpires[i], targPos, new Vector3(0, 180, 0), 2000, UtilityScript.easingStyle.Cube, UtilityScript.easingDirection.Out, source.Token));
         }
-        if (source.Token.IsCancellationRequested)
-        {
-            return;
-        }
+        
     }
 
-    private async void generateSpire(CancellationToken tkn)
+    private IEnumerator generateSpire(CancellationToken tkn)
     {
         //
         while (runGroundAnimation == true)
@@ -129,31 +124,28 @@ public class GroundMover : MonoBehaviour
 
                     Vector3 targPos = new Vector3(activeSpires[i].transform.localPosition.x, -activeSpires[i].transform.localScale.y / 2, zSpawnPos + zOffset);
                     //activeSpires[i].transform.localPosition = targPos;
-                    utilityScript.Tween(activeSpires[i], targPos, new Vector3(0, 180, 0), 500, UtilityScript.easingStyle.Cube, UtilityScript.easingDirection.Out, source.Token);
+                    StartCoroutine(utilityScript.Tween(activeSpires[i], targPos, new Vector3(0, 180, 0), 2000, UtilityScript.easingStyle.Cube, UtilityScript.easingDirection.Out, source.Token));
                 }
                 else if (activeSpires[i].transform.position.z < -12 & statuses[i] == 1)
                 {
                     statuses[i] = 2;
                     //statuses[i] = 0;
                     Vector3 targPos = new Vector3(activeSpires[i].transform.position.x, -75, activeSpires[i].transform.position.z);
-                    utilityScript.Tween(activeSpires[i], targPos, new Vector3(0, 180, 0), 500, UtilityScript.easingStyle.Cube, UtilityScript.easingDirection.In, source.Token);
-                    SetInMiliseconds(510, i, 0);
+                    StartCoroutine(utilityScript.Tween(activeSpires[i], targPos, new Vector3(0, 180, 0), 2000, UtilityScript.easingStyle.Cube, UtilityScript.easingDirection.In, source.Token));
+                    StartCoroutine(SetInMiliseconds(510, i, 0));
                     //activeSpires[i] = null;
                 }
 
             }
-            if(tkn.IsCancellationRequested)
-            {
-                return;
-            }
-            await Task.Delay(1);
+
+            yield return null;
         }
         
     }
 
-    private async void SetInMiliseconds(int miliseconds, int index, int status)
+    private IEnumerator SetInMiliseconds(int miliseconds, int index, int status)
     {
-        await Task.Delay(miliseconds);
+        yield return new WaitForSeconds((float)miliseconds / 1000f);
         statuses[index] = status;
     }
 
@@ -170,17 +162,14 @@ public class GroundMover : MonoBehaviour
         
     }
 
-    private async void moveGround(CancellationToken tkn)
+    private IEnumerator moveGround(CancellationToken tkn)
     {
         while(runGroundAnimation == true)
         {
             transform.position = new Vector3(transform.position.x, transform.position.y, -zOffset);
             zOffset += 3 * Time.deltaTime;
-            await Task.Delay(1);
-            if (source.Token.IsCancellationRequested)
-            {
-                return;
-            }
+            yield return null;
+            
         }
     }
 
