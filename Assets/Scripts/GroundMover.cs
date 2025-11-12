@@ -130,7 +130,7 @@ public class GroundMover : MonoBehaviour
                 {
                     statuses[i] = 2;
                     //statuses[i] = 0;
-                    Vector3 targPos = new Vector3(activeSpires[i].transform.position.x, -75, activeSpires[i].transform.position.z);
+                    Vector3 targPos = new Vector3(activeSpires[i].transform.localPosition.x, -75, activeSpires[i].transform.localPosition.z);
                     StartCoroutine(utilityScript.Tween(activeSpires[i], targPos, new Vector3(0, 180, 0), 2000, UtilityScript.easingStyle.Cube, UtilityScript.easingDirection.In, source.Token));
                     StartCoroutine(SetInMiliseconds(510, i, 0));
                     //activeSpires[i] = null;

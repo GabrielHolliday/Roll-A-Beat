@@ -303,10 +303,11 @@ public class UIManager : MonoBehaviour
         void LoadPlay()
         {
             startRound.onClick.RemoveAllListeners();
+            gameManager.requestRoundStart(index, 1);
             for (int i = 0; i < children.Count; i++)
             {
                 children[i].gameObject.GetComponent<Image>().CrossFadeAlpha(0, 0.7f, true);
-                gameManager.requestRoundStart(index, 1);
+                
                 SwapTooAndCleanup(playModeCanvas);
             }
             
@@ -333,6 +334,7 @@ public class UIManager : MonoBehaviour
     private IEnumerator PostGameCanvasControl(List<GameObject> children, CancellationToken token)
     {
         if (curCanvas == null) yield break;
+        yield return new WaitForSeconds(3f);
         //UnityEngine.Debug.Log("uuu");
 
         TextMeshProUGUI internalText = null;

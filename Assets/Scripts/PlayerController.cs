@@ -54,10 +54,11 @@ public class PlayerController : MonoBehaviour
         rb.AddForce(movementForce * speed);
         if (transform.position.y < -3)
         {
+            gameManage.PlayerDied();
+            Debug.Log("player hit");
             transform.position = new Vector3(0, 1, 0);
             gameObject.SetActive(false);
             
-            StartCoroutine(gameManage.PlayerDied());
         }
     }
 
@@ -68,7 +69,7 @@ public class PlayerController : MonoBehaviour
         {
             transform.position = new Vector3(0, 1, 0);
             gameObject.SetActive(false);
-            StartCoroutine(gameManage.PlayerDied());
+            gameManage.PlayerDied();
             
         }
     }

@@ -129,7 +129,6 @@ public class GameManage : MonoBehaviour
         /// 
         
 
-
         if (state == GameState.LevelSelectMenu || state == GameState.PlayingDead)
         {
 
@@ -145,13 +144,14 @@ public class GameManage : MonoBehaviour
         //playerController.Respawn();
     }
 
-    public IEnumerator PlayerDied()
-    {
-        if (state != GameState.PlayingAlive) yield break;
+    public void PlayerDied()
+    { 
+        Debug.Log("fired");
+        if (state != GameState.PlayingAlive) return;
+        Debug.Log("Passed check");
         StartCoroutine(rythmEngine.stopMusic(source.Token));
-        yield return new WaitForSeconds(1f);
+        
         uiManager.SwapTooAndCleanup(uiManager.PostGameCanvas);
-
     }
 
     //

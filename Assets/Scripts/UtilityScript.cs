@@ -119,8 +119,43 @@ public class UtilityScript : MonoBehaviour
         item.transform.localRotation = endRot;
         alreadyTweening.Remove(item);
     }
- 
-    
+
+    public IEnumerator Tween(GameObject item, Vector3 endPos, int milliseconds, easingStyle style, easingDirection direction, CancellationToken token)
+    {
+        if (item == null | alreadyTweening.Contains(item)) yield break;
+        alreadyTweening.Add(item);
+        float time = 0;
+        Vector3 startScale = item.transform.localScale;
+        Vector3 startPos = item.transform.localPosition;
+        Quaternion startRot = item.transform.localRotation;
+        
+        while (time < milliseconds)
+        {
+            float lerpyPos = time / milliseconds;
+            switch (style)
+            {
+                case easingStyle.None:
+                    break;
+                case easingStyle.Cube:
+                    if (direction == easingDirection.In) lerpyPos = lerpyPos * lerpyPos * lerpyPos; // no ^ in c#? :(
+                    else if (direction == easingDirection.Out) lerpyPos = 1.0f - Mathf.Pow(1.0f - lerpyPos, 3.0f);
+                    break;
+            }
+
+            item.transform.localPosition = Vector3.Lerp(startPos, endPos, lerpyPos);
+            
+            time += Time.deltaTime * 1000;
+            yield return null;
+        }
+
+        item.transform.localPosition = endPos;
+      
+        alreadyTweening.Remove(item);
+    }
+
+
+
+
     /*
     public async Task Tween(GameObject item, Vector3 endPos, int milliseconds, CancellationToken token) 
     {

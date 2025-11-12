@@ -5,12 +5,14 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
-using Unity.Mathematics;
-using Unity.VisualScripting;
-using UnityEngine;
 //using UnityEngine.Timeline;
 //using UnityEngine.UIElements;
 using TMPro;
+using Unity.Mathematics;
+using Unity.VisualScripting;
+using UnityEngine;
+using UnityEngine.UIElements;
+using static UnityEngine.EventSystems.EventTrigger;
 //using UnityEngine.Audio;
 
 public class RythmEngine : MonoBehaviour
@@ -140,7 +142,7 @@ public class RythmEngine : MonoBehaviour
         while (AudioSettings.dspTime < targTime) yield return null;
         
         if (token.IsCancellationRequested | beat < 0) yield break;
-        Debug.Log("womp trigger re" + beat);
+        //Debug.Log("womp trigger re" + beat);
         bossController.WompRecieve((int)char.GetNumericValue(songData[beat][4]), beat);
 
 
@@ -167,6 +169,18 @@ public class RythmEngine : MonoBehaviour
     }
     //-------------------------------------------------------------------------------
 
+    private void goUp(GameObject obj, int posIndex, Vector3 angle)
+    {
+        Vector3 targVec3 = enemySpawnLocations[posIndex] + Vector3.up * 11;
+        StartCoroutine(utilityScript.Tween(obj, targVec3, (int)(28f / (float)targetBpm * 1000), UtilityScript.easingStyle.Cube, UtilityScript.easingDirection.Out, source.Token));
+    }
+
+    private void goDown(GameObject obj, int posIndex, Vector3 angle)
+    {
+        Vector3 targVec3 = enemySpawnLocations[posIndex] + Vector3.up * 5;
+        StartCoroutine(utilityScript.Tween(obj, targVec3, angle, (int)(28f / (float)targetBpm * 1000), UtilityScript.easingStyle.Cube, UtilityScript.easingDirection.Out, source.Token));
+    }
+
 
     private void rotateEnemy(GameObject enemy, int rotateAmmount)
     {
@@ -179,12 +193,40 @@ public class RythmEngine : MonoBehaviour
         Vector3 targVec3 = new Vector3(0, rotateAmmount, extra);
         Debug.Log($"{enemy} {targVec3}");
         //enemy.transform.rotation = Quaternion.Euler(targVec3);
-        StartCoroutine(utilityScript.Tween(enemy, enemy.transform.position, targVec3, (int)(28f / (float)targetBpm * 1000), UtilityScript.easingStyle.Cube, UtilityScript.easingDirection.Out, source.Token));//; stil a wip
-
-
+        StartCoroutine(utilityScript.Tween(enemy, enemy.transform.position, targVec3, (int)(40f / (float)targetBpm * 1000), UtilityScript.easingStyle.Cube, UtilityScript.easingDirection.Out, source.Token));//; stil a wip
     }
 
+    private IEnumerator Charge(GameObject obj, int posIndex, Vector3 angle)
+    {
+        obj.transform.Find("FrontThing").gameObject.SetActive(true);
+        goUp(obj, posIndex, angle);
+
+        float targPosForLaser = obj.transform.position.x;
+        GameObject ghost = obj.transform.Find("Ghost").gameObject;
+        ghost.transform.localScale = new Vector3(0, 6, 0);
+        StartCoroutine(utilityScript.Tween(ghost,new Vector3(7,0,0), new Vector3(0,0,90), new Vector3(2,6,2), predictNextFire(posIndex), UtilityScript.easingStyle.None, UtilityScript.easingDirection.Out, gameManage.source.Token));
+        obj.transform.Find("Ghost").gameObject.SetActive(true);
+        yield return null;
+    }
+
+   
+
     private bool forceUnquiet = false;
+
+    private int predictNextFire(int enemyIndex)
+    {
+        for (int i = 0; i < curSongLength - beat; i++)
+        {
+            //Debug.Log("a");
+            if (songData[i + beat][enemyIndex] == '2')
+            {
+                return i *(int)(60f / targetBpm * 1000f);
+            }
+        }
+        Debug.Log("returning 0");
+        return 0;
+    }
+
     public IEnumerator stopMusic(CancellationToken token)
     {
         forceUnquiet = false;
@@ -198,8 +240,8 @@ public class RythmEngine : MonoBehaviour
                 track.Stop();
                 break;
             }
-            track.pitch -= 0.01f * Time.deltaTime;
-            track.volume -= 0.01f * Time.deltaTime;
+            track.pitch -= Time.deltaTime * 0.5f;
+            track.volume -= Time.deltaTime * 0.5f;
             yield return null;
         }
         track.Stop();
@@ -213,20 +255,26 @@ public class RythmEngine : MonoBehaviour
         {
             GameObject curEnemy = activeEnemies[i];
             Transform chargePiece = curEnemy.transform.Find("FrontThing");//fix (should work maybe?)
-
+            Vector3 myCoolAngle = Vector3.zero;
             switch (enemyStates[i])
             {
                 case '0':
                     break;
                 case '1':
-                    Debug.Log("charging");
-                    chargePiece.gameObject.SetActive(true);
+                    //Debug.Log("charging");
+                    
+                    if (i > 1) myCoolAngle = new Vector3(0, 0, 180);
+                    StartCoroutine(Charge(curEnemy, i, myCoolAngle));
                     break;
                 case '2':
                     fireLaser(curEnemy.transform);
+                    curEnemy.transform.Find("Ghost").gameObject.SetActive(false);
                     break;
                 case '3':
                     chargePiece.gameObject.SetActive(false);
+                    if (i > 1) myCoolAngle = new Vector3(0, 0, 180);
+                    goDown(curEnemy, i, myCoolAngle);
+                   
                     if (laserFolder.transform.Find(curEnemy.name))
                     {
                         for (int h = 0; h < laserFolder.transform.childCount; h++)

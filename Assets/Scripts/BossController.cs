@@ -178,7 +178,7 @@ public class BossController : MonoBehaviour
 
     public void WompRecieve(int state, int beat)//ran by rythm manager every beat, using a function and not an event cause data needs to be passed
     {
-        Debug.Log("WompRecieve" + beat);
+        //Debug.Log("WompRecieve" + beat);
         mode = state;
         switch (state)//for special animations
         {
