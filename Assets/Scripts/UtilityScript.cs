@@ -15,7 +15,11 @@ using UnityEngine.UIElements;
 //using static UnityEditor.Progress;
 using static UnityEngine.Rendering.DebugUI.MessageBox;
 
-
+public class AnimateJobs
+{
+    public GameObject obj;
+    public int jobIndex;
+}
 
 public class UtilityScript : MonoBehaviour
 {
@@ -52,12 +56,24 @@ public class UtilityScript : MonoBehaviour
         return startNum;
     }
 
-    private List<GameObject> alreadyTweening = new List<GameObject>();
-
+    private List<AnimateJobs> alreadyTweening = new List<AnimateJobs>();
+    private int jobCount = 0;
     public IEnumerator Tween(GameObject item, Vector3 endPos, Vector3 endEuler, Vector3 endScale, int milliseconds, easingStyle style, easingDirection direction, CancellationToken token)
     {
-        if (item == null | alreadyTweening.Contains(item)) yield break;
-        alreadyTweening.Add(item);
+        for (int i = 0; i < alreadyTweening.Count; i++)
+        {
+            if(alreadyTweening[i].obj == item)
+            {
+                alreadyTweening.Remove(alreadyTweening[i]);
+                break;
+            }
+        }
+        
+        AnimateJobs curJob = new AnimateJobs();
+        curJob.obj = item;
+        curJob.jobIndex = jobCount;
+        jobCount ++;
+        alreadyTweening.Add(curJob);
         float time = 0;
         Vector3 startScale = item.transform.localScale;
         Vector3 startPos = item.transform.localPosition;
@@ -65,6 +81,7 @@ public class UtilityScript : MonoBehaviour
         Quaternion endRot = Quaternion.Euler(endEuler);
         while (time < milliseconds)
         {
+            if(!alreadyTweening.Contains(curJob)) yield break;
             float lerpyPos = time / milliseconds;
             switch (style)
             {
@@ -84,13 +101,24 @@ public class UtilityScript : MonoBehaviour
         item.transform.localScale = endScale;
         item.transform.localPosition = endPos;
         item.transform.localRotation = endRot;
-        alreadyTweening.Remove(item);
+        alreadyTweening.Remove(curJob);
     }
     
     public IEnumerator Tween(GameObject item, Vector3 endPos, Vector3 endEuler,  int milliseconds, easingStyle style, easingDirection direction, CancellationToken token)
     {
-        if (item == null | alreadyTweening.Contains(item)) yield break;
-        alreadyTweening.Add(item);
+        for (int i = 0; i < alreadyTweening.Count; i++)
+        {
+            if(alreadyTweening[i].obj == item)
+            {
+                alreadyTweening.Remove(alreadyTweening[i]);
+                break;
+            }
+        }
+        AnimateJobs curJob = new AnimateJobs();
+        curJob.obj = item;
+        curJob.jobIndex = jobCount;
+        jobCount ++;
+        alreadyTweening.Add(curJob);
         float time = 0;
         Vector3 startScale = item.transform.localScale;
         Vector3 startPos = item.transform.localPosition;
@@ -98,6 +126,7 @@ public class UtilityScript : MonoBehaviour
         Quaternion endRot = Quaternion.Euler(endEuler);
         while(time < milliseconds)
         {
+            if(!alreadyTweening.Contains(curJob)) yield break;
             float lerpyPos = time / milliseconds;
             switch (style)
             {
@@ -117,13 +146,24 @@ public class UtilityScript : MonoBehaviour
         
         item.transform.localPosition = endPos;
         item.transform.localRotation = endRot;
-        alreadyTweening.Remove(item);
+        alreadyTweening.Remove(curJob);
     }
 
     public IEnumerator Tween(GameObject item, Vector3 endPos, int milliseconds, easingStyle style, easingDirection direction, CancellationToken token)
     {
-        if (item == null | alreadyTweening.Contains(item)) yield break;
-        alreadyTweening.Add(item);
+        for (int i = 0; i < alreadyTweening.Count; i++)
+        {
+            if(alreadyTweening[i].obj == item)
+            {
+                alreadyTweening.Remove(alreadyTweening[i]);
+                break;
+            }
+        }
+        AnimateJobs curJob = new AnimateJobs();
+        curJob.obj = item;
+        curJob.jobIndex = jobCount;
+        jobCount ++;
+        alreadyTweening.Add(curJob);
         float time = 0;
         Vector3 startScale = item.transform.localScale;
         Vector3 startPos = item.transform.localPosition;
@@ -131,6 +171,7 @@ public class UtilityScript : MonoBehaviour
         
         while (time < milliseconds)
         {
+            if(!alreadyTweening.Contains(curJob)) yield break;
             float lerpyPos = time / milliseconds;
             switch (style)
             {
@@ -150,7 +191,7 @@ public class UtilityScript : MonoBehaviour
 
         item.transform.localPosition = endPos;
       
-        alreadyTweening.Remove(item);
+        alreadyTweening.Remove(curJob);
     }
 
 

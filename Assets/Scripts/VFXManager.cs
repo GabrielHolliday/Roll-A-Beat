@@ -31,7 +31,8 @@ public class VFXManager : MonoBehaviour
     private Vector3 wallSpawnPointR = new Vector3(30, 0, 0);
 
     //wall stuff
-    float spawnAt;
+    private float spawnAt;
+    private float curWallLeng;
     //
 
 
@@ -42,8 +43,7 @@ public class VFXManager : MonoBehaviour
         spirePref = backGround.transform.Find("Spire").GetComponent<Image>();
         BuildSpires(CurrentColorTarg);
         totalMag = 0f;
-        wallParent = transform.Find("Walls").gameObject;
-        
+        wallParent = transform.Find("Walls").gameObject;  
     }
 
     public void BuildSpires(Vector3 color)
@@ -60,42 +60,55 @@ public class VFXManager : MonoBehaviour
 
     public void HideWalls()
     {
-        StartCoroutine(utilityScript.Tween(wallParent, new Vector3(wallParent.transform.position.x, -500, wallParent.transform.position.z), 2000, UtilityScript.easingStyle.Cube, UtilityScript.easingDirection.In, gameManage.source.Token));
+        StartCoroutine(utilityScript.Tween(gameObject, new Vector3(wallParent.transform.position.x, -500, wallParent.transform.position.z), 2000, UtilityScript.easingStyle.Cube, UtilityScript.easingDirection.In, gameManage.source.Token));
     }
 
     public void ShowWalls()
     {
-        StartCoroutine(utilityScript.Tween(wallParent, new Vector3(wallParent.transform.position.x, 0, wallParent.transform.position.z), 2000, UtilityScript.easingStyle.Cube, UtilityScript.easingDirection.Out, gameManage.source.Token));
+        StartCoroutine(utilityScript.Tween(gameObject, new Vector3(wallParent.transform.position.x, 0, wallParent.transform.position.z), 2000, UtilityScript.easingStyle.Cube, UtilityScript.easingDirection.Out, gameManage.source.Token));
     }
 
-    private void SpawnWall()
+    private void SpawnWall(float heightModifier)
     {
+        Debug.Log("r");
         if (currentSetWall == null) return;
-        Instantiate(currentSetWall, wallSpawnPointL + (Vector3.forward *spawnAt), quaternion.Euler(new Vector3(0, 90, 0)), wallParent.transform);
-        Instantiate(currentSetWall, wallSpawnPointR + (Vector3.forward * spawnAt), quaternion.Euler(new Vector3(0, -90, 0)), wallParent.transform);
+        Debug.Log("a");
+        GameObject lWall = Instantiate(currentSetWall, wallSpawnPointL + (Vector3.forward *spawnAt) + Vector3.up * heightModifier, Quaternion.Euler(new Vector3(0, 90, 0)), wallParent.transform);
+        GameObject rWall =Instantiate(currentSetWall, wallSpawnPointR + (Vector3.forward * spawnAt) + Vector3.up * heightModifier, Quaternion.Euler(new Vector3(0, -90, 0)), wallParent.transform);
         
-
+        spawnAt += curWallLeng;
     }
 
-    private void BuildWallsToo(GameObject obj)
-    {
-        if (obj == null) return;
-        //zSize = obj.transform.
-
-    }
+    
 
 
     public IEnumerator switchWallsToo(string type)
     {
+        
         switch(type)
         {
-            case "Forest":
-                HideWalls();
-                yield return new WaitForSeconds(2f);
+            case "forest":
+                currentSetWall = forrestWallPrefab;
                 break;
-
-
+            case "dungeon":
+                currentSetWall = dungeonWallPrefab;
+                break; 
         }
+        HideWalls();
+        yield return new WaitForSeconds(2f);
+        for (int i = 0; i < wallParent.transform.childCount; i++)
+        {
+            Destroy(wallParent.transform.GetChild(i).gameObject);
+        }
+        //wallParent.transform.localPosition = Vector3.zero;
+        //spawnAt = 0;
+        curWallLeng = currentSetWall.transform.Find("Border").transform.lossyScale.x;
+        for (int i = 0; i < 10; i++)
+        {
+            SpawnWall(-500);
+        }
+        yield return new WaitForSeconds(1f);
+        ShowWalls();
     }
 
 
@@ -130,8 +143,11 @@ public class VFXManager : MonoBehaviour
         //============================================================================================================
 
         //wall mover==================================================================================================
-        wallParent.transform.position = Vector3.back * Time.time;
-
+        wallParent.transform.localPosition= Vector3.back * Time.time * 6;
+        if(transform.position.z < -spawnAt)
+        {
+            //SpawnWall(0);
+        }
 
         //============================================================================================================
 

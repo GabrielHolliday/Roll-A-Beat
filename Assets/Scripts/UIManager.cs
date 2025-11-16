@@ -20,6 +20,7 @@ public class UIManager : MonoBehaviour
     public Canvas playModeCanvas;
     public Canvas onlyShowBoss;
 
+    public VFXManager vFXManager;
     public GameManage gameManager;
     public CameraController cameraController;
     public BossController bossController;
@@ -41,6 +42,7 @@ public class UIManager : MonoBehaviour
     //data
   
     private string[] bossFaceNames = { "Wendigo", "SkullFace" };
+    private string[] bossFacePlaces = { "forest", "dungeon" };
     //
     
     public void SwapTooAndCleanup(Canvas toSwap)
@@ -261,7 +263,11 @@ public class UIManager : MonoBehaviour
 
             index -= 1;
             levelName.text = levelNames[index - 1];
-            if(!ignore) StartCoroutine(bossController.ChangeBossFace(bossFaceNames[index - 1]));
+            if(!ignore)
+            {
+                StartCoroutine(bossController.ChangeBossFace(bossFaceNames[index - 1]));
+                StartCoroutine(vFXManager.switchWallsToo(levelNames[index - 1].ToLower()));
+            }
             //maybe another function in here, oh yea one that interacts with ground mover for the backrounds, eventually
 
             if (index <= 1)
@@ -282,7 +288,11 @@ public class UIManager : MonoBehaviour
             index += 1;
 
             levelName.text = levelNames[index - 1];
-            if(!ignore) StartCoroutine(bossController.ChangeBossFace(bossFaceNames[index - 1]));
+            if(!ignore)
+            {
+                StartCoroutine(bossController.ChangeBossFace(bossFaceNames[index - 1]));
+                StartCoroutine(vFXManager.switchWallsToo(levelNames[index - 1].ToLower()));
+            }
             //maybe another function in here, oh yea one that interacts with ground mover for the backrounds, eventually
 
 
@@ -319,6 +329,7 @@ public class UIManager : MonoBehaviour
         loadLeft();
         index = 1;
         StartCoroutine(bossController.ChangeBossFace(bossFaceNames[0]));
+        StartCoroutine(vFXManager.switchWallsToo(levelNames[0].ToLower()));
         ignore = false;
         bossController.SetLookTarg("Player");
         left.onClick.AddListener(loadLeft);
