@@ -98,7 +98,7 @@ public class BossController : MonoBehaviour
     private IEnumerator TestFunctions()
     {
         HideEyes();
-        yield return new WaitForSeconds(2f);
+        yield return new WaitForSeconds(0.5f);
         StartCoroutine(ChangeBossFace("SkullFace"));
         //StartIdleBounce();
         yield return new WaitForSeconds(4f);
@@ -359,7 +359,7 @@ public class BossController : MonoBehaviour
 
     public IEnumerator ChangeBossFace(string changeTo)
     {
-        if (currentBossFace != null && currentBossFace.name == changeTo) yield break;
+        //if (currentBossFace != null) yield break;
         //Cancelations
         for (int i = 0; i < sources.Count; i++)
         {
@@ -375,7 +375,7 @@ public class BossController : MonoBehaviour
         intendedPos = new Vector3(0, -100, 0);
         //Debug.Log("you made it here");
         yield return new WaitForSeconds(1f);
-
+        if (token.IsCancellationRequested) yield break;
         
         //Debug.Log("now here");
         for (int i = 0; i < bossFaceParent.transform.childCount; i++)

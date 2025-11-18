@@ -251,6 +251,9 @@ public class UIManager : MonoBehaviour
         levelName.text = levelNames[index - 1];
 
         bool ignore = true;
+
+        Coroutine changingFloors = null;
+        Coroutine changingFaces = null;
         void loadLeft()
         {
             if (index <= 1)
@@ -265,8 +268,10 @@ public class UIManager : MonoBehaviour
             levelName.text = levelNames[index - 1];
             if(!ignore)
             {
+                
                 StartCoroutine(bossController.ChangeBossFace(bossFaceNames[index - 1]));
-                StartCoroutine(vFXManager.switchWallsToo(levelNames[index - 1].ToLower()));
+                if (changingFloors != null) StopCoroutine(changingFloors);
+                changingFloors =  StartCoroutine(vFXManager.switchWallsToo(levelNames[index - 1].ToLower()));
             }
             //maybe another function in here, oh yea one that interacts with ground mover for the backrounds, eventually
 
@@ -290,8 +295,10 @@ public class UIManager : MonoBehaviour
             levelName.text = levelNames[index - 1];
             if(!ignore)
             {
+                
                 StartCoroutine(bossController.ChangeBossFace(bossFaceNames[index - 1]));
-                StartCoroutine(vFXManager.switchWallsToo(levelNames[index - 1].ToLower()));
+                if (changingFloors != null) StopCoroutine(changingFloors);
+                changingFloors = StartCoroutine(vFXManager.switchWallsToo(levelNames[index - 1].ToLower()));
             }
             //maybe another function in here, oh yea one that interacts with ground mover for the backrounds, eventually
 
@@ -328,8 +335,8 @@ public class UIManager : MonoBehaviour
         loadLeft();
         loadLeft();
         index = 1;
-        StartCoroutine(bossController.ChangeBossFace(bossFaceNames[0]));
-        StartCoroutine(vFXManager.switchWallsToo(levelNames[0].ToLower()));
+        changingFaces =  StartCoroutine(bossController.ChangeBossFace(bossFaceNames[0]));
+        changingFloors = StartCoroutine(vFXManager.switchWallsToo(levelNames[0].ToLower()));
         ignore = false;
         bossController.SetLookTarg("Player");
         left.onClick.AddListener(loadLeft);

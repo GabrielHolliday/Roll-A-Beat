@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.UI;
@@ -60,38 +61,46 @@ public class VFXManager : MonoBehaviour
 
     public void HideWalls()
     {
-        StartCoroutine(utilityScript.Tween(gameObject, new Vector3(wallParent.transform.position.x, -500, wallParent.transform.position.z), 2000, UtilityScript.easingStyle.Cube, UtilityScript.easingDirection.In, gameManage.source.Token));
+        StartCoroutine(utilityScript.Tween(gameObject, new Vector3(gameObject.transform.position.x, -500, gameObject.transform.position.z), 1000, UtilityScript.easingStyle.Cube, UtilityScript.easingDirection.In, gameManage.source.Token));
     }
 
     public void ShowWalls()
     {
-        StartCoroutine(utilityScript.Tween(gameObject, new Vector3(wallParent.transform.position.x, 0, wallParent.transform.position.z), 2000, UtilityScript.easingStyle.Cube, UtilityScript.easingDirection.Out, gameManage.source.Token));
+        StartCoroutine(utilityScript.Tween(gameObject, new Vector3(gameObject.transform.position.x, 0, gameObject.transform.position.z), 2000, UtilityScript.easingStyle.Cube, UtilityScript.easingDirection.Out, gameManage.source.Token));
     }
 
     private void SpawnWall(float heightModifier)
     {
-        Debug.Log("r");
+        
         if (currentSetWall == null) return;
-        Debug.Log("a");
+        
         GameObject lWall = Instantiate(currentSetWall, wallSpawnPointL + (Vector3.forward *spawnAt) + Vector3.up * heightModifier, Quaternion.Euler(new Vector3(0, 90, 0)));
         GameObject rWall =Instantiate(currentSetWall, wallSpawnPointR + (Vector3.forward * spawnAt) + Vector3.up * heightModifier, Quaternion.Euler(new Vector3(0, -90, 0)));
         rWall.transform.parent = wallParent.transform;
+        rWall.transform.localPosition = wallSpawnPointR + (Vector3.forward * spawnAt);
         lWall.transform.parent = wallParent.transform;
+        lWall.transform.localPosition = wallSpawnPointL + (Vector3.forward * spawnAt);
         spawnAt += curWallLeng;
     }
 
     
 
-
+    
     public IEnumerator switchWallsToo(string type)
     {
         
         switch(type)
         {
             case "forest":
+                //any lighting animations
+
+                //
                 currentSetWall = forrestWallPrefab;
                 break;
             case "dungeon":
+                //lighting
+
+                //
                 currentSetWall = dungeonWallPrefab;
                 break; 
         }
@@ -146,9 +155,33 @@ public class VFXManager : MonoBehaviour
         //wall mover==================================================================================================
         wallParent.transform.localPosition+=Vector3.back * 10*Time.deltaTime;
         //spawnAt-= 1*10*Time.deltaTime;
-        if(wallParent.transform.localPosition.z < -spawnAt + 100 && wallParent.transform.childCount < 50) 
+        if (wallParent.transform.localPosition.z < -spawnAt + 500)
         {
-            SpawnWall(transform.position.y);
+            if (wallParent.transform.childCount < 200)
+            {
+                    SpawnWall(transform.position.y);
+            }
+            else
+            {
+                    (GameObject, float) toDestryL = (null, 0f);
+                    (GameObject, float) toDestryR = (null, 0f);
+                    for (int i = 0; i < wallParent.transform.childCount; i++)
+                    {
+
+                        if (wallParent.transform.GetChild(i).transform.localPosition.x > 0 && (toDestryL.Item1 == null || wallParent.transform.GetChild(i).transform.localPosition.z < toDestryL.Item2))
+                        {
+                            toDestryL = (wallParent.transform.GetChild(i).gameObject, wallParent.transform.GetChild(i).transform.localPosition.z);
+                        }
+                        if (wallParent.transform.GetChild(i).transform.localPosition.x < 0 && (toDestryR.Item1 == null || wallParent.transform.GetChild(i).transform.localPosition.z < toDestryR.Item2))
+                        {
+                            toDestryR = (wallParent.transform.GetChild(i).gameObject, wallParent.transform.GetChild(i).transform.localPosition.z);
+                        }
+                    }
+                    Destroy(toDestryR.Item1);
+                    Destroy(toDestryL.Item1);
+
+                    SpawnWall(transform.position.y);
+            }
         }
 
         //============================================================================================================

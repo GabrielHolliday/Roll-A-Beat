@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 1433728454779787978}
   - component: {fileID: 4211139024830497766}
   - component: {fileID: 1447520257501653699}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Forest
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -121,7 +121,7 @@ GameObject:
   - component: {fileID: 334546791098860860}
   - component: {fileID: 5997037731741558610}
   - component: {fileID: 4175373639649317395}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Border
   m_TagString: Untagged
   m_Icon: {fileID: 0}
