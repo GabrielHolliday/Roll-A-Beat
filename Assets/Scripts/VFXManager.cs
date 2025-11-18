@@ -73,9 +73,10 @@ public class VFXManager : MonoBehaviour
         Debug.Log("r");
         if (currentSetWall == null) return;
         Debug.Log("a");
-        GameObject lWall = Instantiate(currentSetWall, wallSpawnPointL + (Vector3.forward *spawnAt) + Vector3.up * heightModifier, Quaternion.Euler(new Vector3(0, 90, 0)), wallParent.transform);
-        GameObject rWall =Instantiate(currentSetWall, wallSpawnPointR + (Vector3.forward * spawnAt) + Vector3.up * heightModifier, Quaternion.Euler(new Vector3(0, -90, 0)), wallParent.transform);
-        
+        GameObject lWall = Instantiate(currentSetWall, wallSpawnPointL + (Vector3.forward *spawnAt) + Vector3.up * heightModifier, Quaternion.Euler(new Vector3(0, 90, 0)));
+        GameObject rWall =Instantiate(currentSetWall, wallSpawnPointR + (Vector3.forward * spawnAt) + Vector3.up * heightModifier, Quaternion.Euler(new Vector3(0, -90, 0)));
+        rWall.transform.parent = wallParent.transform;
+        lWall.transform.parent = wallParent.transform;
         spawnAt += curWallLeng;
     }
 
@@ -100,12 +101,12 @@ public class VFXManager : MonoBehaviour
         {
             Destroy(wallParent.transform.GetChild(i).gameObject);
         }
-        //wallParent.transform.localPosition = Vector3.zero;
-        //spawnAt = 0;
+        wallParent.transform.localPosition = Vector3.zero;
+        spawnAt = 0;
         curWallLeng = currentSetWall.transform.Find("Border").transform.lossyScale.x;
         for (int i = 0; i < 10; i++)
         {
-            SpawnWall(-500);
+            //SpawnWall(-500);
         }
         yield return new WaitForSeconds(1f);
         ShowWalls();
@@ -143,10 +144,11 @@ public class VFXManager : MonoBehaviour
         //============================================================================================================
 
         //wall mover==================================================================================================
-        wallParent.transform.localPosition= Vector3.back * Time.time * 6;
-        if(transform.position.z < -spawnAt)
+        wallParent.transform.localPosition+=Vector3.back * 10*Time.deltaTime;
+        //spawnAt-= 1*10*Time.deltaTime;
+        if(wallParent.transform.localPosition.z < -spawnAt + 100 && wallParent.transform.childCount < 50) 
         {
-            //SpawnWall(0);
+            SpawnWall(transform.position.y);
         }
 
         //============================================================================================================
