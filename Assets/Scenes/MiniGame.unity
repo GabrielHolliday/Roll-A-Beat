@@ -4357,7 +4357,7 @@ MonoBehaviour:
   gameManage: {fileID: 291512881}
   groundSpeed: 0
   rythmEngine: {fileID: 2107793229}
-  godMode: 1
+  godMode: 0
 --- !u!114 &849340134
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5571,7 +5571,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1271948324
 Transform:
   m_ObjectHideFlags: 0
@@ -6314,7 +6314,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'v0.3
+  m_text: 'v0.4
+
 
 '
   m_isRightToLeft: 0
