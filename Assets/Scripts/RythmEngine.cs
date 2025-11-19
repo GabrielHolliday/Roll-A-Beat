@@ -162,13 +162,13 @@ public class RythmEngine : MonoBehaviour
         //else cameraController.angleWeight -= 2;
         
         //
-        //cameraController.addRumble(10);
-        GameObject curLaser = Instantiate(laser, new Vector3(targPosForLaser, parent.position.y, parent.position.z), Quaternion.Euler(new Vector3(parent.rotation.eulerAngles.x, parent.rotation.eulerAngles.y, parent.rotation.eulerAngles.z)));
+        cameraController.addRumble(0.5f);
+        GameObject curLaser = Instantiate(laser, new Vector3(targPosForLaser, parent.position.y, parent.position.z), parent.rotation * Quaternion.Euler(0,-90,0));
         curLaser.transform.SetParent(laserFolder.transform);
         curLaser.name = parent.name;
-    }
+        
     //-------------------------------------------------------------------------------
-
+    }
     private void goUp(GameObject obj, int posIndex, Vector3 angle)
     {
         Vector3 targVec3 = enemySpawnLocations[posIndex] + Vector3.up * 11;
@@ -184,13 +184,13 @@ public class RythmEngine : MonoBehaviour
 
     private void rotateEnemy(GameObject enemy, int rotateAmmount)
     {
-        int extra = 0;
+        int extra = 90;
         if (enemy.transform.position.x > 0)
         {
             rotateAmmount *= -1;
-            extra = 180;
+            extra *= -1;
         }
-        Vector3 targVec3 = new Vector3(0, rotateAmmount, extra);
+        Vector3 targVec3 = new Vector3(0, rotateAmmount + extra, 0);
         Debug.Log($"{enemy} {targVec3}");
         //enemy.transform.rotation = Quaternion.Euler(targVec3);
         StartCoroutine(utilityScript.Tween(enemy, enemy.transform.position, targVec3, (int)(40f / (float)targetBpm * 1000), UtilityScript.easingStyle.Cube, UtilityScript.easingDirection.Out, source.Token));//; stil a wip
@@ -198,13 +198,13 @@ public class RythmEngine : MonoBehaviour
 
     private IEnumerator Charge(GameObject obj, int posIndex, Vector3 angle)
     {
-        obj.transform.Find("FrontThing").gameObject.SetActive(true);
+        obj.transform.Find("ChargePiece").gameObject.SetActive(true);
         goUp(obj, posIndex, angle);
 
         float targPosForLaser = obj.transform.position.x;
         GameObject ghost = obj.transform.Find("Ghost").gameObject;
         ghost.transform.localScale = new Vector3(0, 6, 0);
-        StartCoroutine(utilityScript.Tween(ghost,new Vector3(7,0,0), new Vector3(0,0,90), new Vector3(2,6,2), predictNextFire(posIndex), UtilityScript.easingStyle.None, UtilityScript.easingDirection.Out, gameManage.source.Token));
+        StartCoroutine(utilityScript.Tween(ghost,new Vector3(0,0,10), new Vector3(0,90,90), new Vector3(2,6,2), predictNextFire(posIndex), UtilityScript.easingStyle.None, UtilityScript.easingDirection.Out, gameManage.source.Token));
         obj.transform.Find("Ghost").gameObject.SetActive(true);
         yield return null;
     }
@@ -220,7 +220,7 @@ public class RythmEngine : MonoBehaviour
             //Debug.Log("a");
             if (songData[i + beat][enemyIndex] == '2')
             {
-                return i *(int)(60f / targetBpm * 1000f);
+                return (i + 1) *(int)(60f / targetBpm * 1000f);
             }
         }
         Debug.Log("returning 0");
@@ -254,16 +254,32 @@ public class RythmEngine : MonoBehaviour
         for (int i = 0; i < 4; i++)
         {
             GameObject curEnemy = activeEnemies[i];
-            Transform chargePiece = curEnemy.transform.Find("FrontThing");//fix (should work maybe?)
-            Vector3 myCoolAngle = Vector3.zero;
+            Transform chargePiece = curEnemy.transform.Find("ChargePiece");//fix (should work maybe?)
+            Vector3 myCoolAngle = Vector3.up * 90;
             switch (enemyStates[i])
             {
                 case '0':
                     break;
                 case '1':
                     //Debug.Log("charging");
-                    
-                    if (i > 1) myCoolAngle = new Vector3(0, 0, 180);
+                    if (laserFolder.transform.Find(curEnemy.name))
+                    {
+                        for (int h = 0; h < laserFolder.transform.childCount; h++)
+                        {
+                            if (laserFolder.transform.GetChild(h).name == curEnemy.name)
+                            {
+                                Destroy(laserFolder.transform.GetChild(h).gameObject);
+                                Debug.Log($"Destroying... {curEnemy.name}");
+                                Debug.Log(laserFolder.transform.childCount);
+                                if (laserFolder.transform.childCount <= 1)
+                                {
+                                    cameraController.rumblin = false;
+                                    cameraController.angleWeight = 0;
+                                }
+                            }
+                        }
+                    }
+                    if (i > 1) myCoolAngle = Vector3.up * -90;
                     StartCoroutine(Charge(curEnemy, i, myCoolAngle));
                     break;
                 case '2':
@@ -272,9 +288,9 @@ public class RythmEngine : MonoBehaviour
                     break;
                 case '3':
                     chargePiece.gameObject.SetActive(false);
-                    if (i > 1) myCoolAngle = new Vector3(0, 0, 180);
+                    if (i > 1) myCoolAngle = Vector3.up * -90;
                     goDown(curEnemy, i, myCoolAngle);
-                   
+                    
                     if (laserFolder.transform.Find(curEnemy.name))
                     {
                         for (int h = 0; h < laserFolder.transform.childCount; h++)
@@ -430,7 +446,7 @@ public class RythmEngine : MonoBehaviour
 
         ClearScreen();
         Debug.Log("sdsd");
-        Vector3 myCoolAngle = new Vector3(0, 0, 0);
+        Vector3 myCoolAngle = new Vector3(0, 90, 0);
         //var resets
         runMetronome = true;
         beat = -4;
@@ -438,7 +454,7 @@ public class RythmEngine : MonoBehaviour
         for (int i = 0; i < 4; i++)
         {
             yield return new WaitForSeconds(0.5f);
-            if (i > 1) myCoolAngle = new Vector3(0, 0, 180);
+            if (i > 1) myCoolAngle = new Vector3(0, -90, 0);
             spawnEnemy(i, myCoolAngle);
         }
         yield return new WaitForSeconds(2f);

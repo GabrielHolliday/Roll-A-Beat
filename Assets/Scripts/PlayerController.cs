@@ -36,6 +36,9 @@ public class PlayerController : MonoBehaviour
     {
         gameObject.transform.position = respawnPos;
         gameObject.SetActive(true);
+        rb = GetComponent<Rigidbody>();
+        rb.linearVelocity = Vector3.zero;
+        rb.angularVelocity = Vector3.zero;
         movementX = 0;
         movementY = 0;
     }

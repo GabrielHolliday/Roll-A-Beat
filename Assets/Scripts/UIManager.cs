@@ -1,6 +1,7 @@
 
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using TMPro;
@@ -26,6 +27,16 @@ public class UIManager : MonoBehaviour
     public BossController bossController;
     public RythmEngine rythmEngine;
 
+    //sounds
+    public AudioSource soundEffectSource;
+    public AudioClip bossLaugh;
+    public AudioClip uIClick;//
+    public AudioClip mainMenuClickPlay;
+    public AudioClip switchToNight;
+    public AudioClip switchToDungeon;
+    public AudioClip menuBack;
+    //
+
     static Canvas curCanvas; //how this will work is we'll clone one of the canvases when we need it, so the man canvases are more prefabs.
     void Start()
     {
@@ -43,6 +54,7 @@ public class UIManager : MonoBehaviour
   
     private string[] bossFaceNames = { "Wendigo", "SkullFace" };
     private string[] bossFacePlaces = { "forest", "dungeon" };
+    
     //
     
     public void SwapTooAndCleanup(Canvas toSwap)
@@ -139,6 +151,7 @@ public class UIManager : MonoBehaviour
             settingsButton.gameObject.SetActive(false);
             onlyShowBoss.gameObject.SetActive(true);
             StartCoroutine(bossController.Sparkle(gameManager.source.Token));
+            //soundEffectSource.PlayOneShot(bossLaugh);
             //bossController.SetLookTarg("Camera");
             yield return new WaitForSeconds(2);
             blackScreen.CrossFadeAlpha(1, 0.7f, true);
@@ -251,7 +264,7 @@ public class UIManager : MonoBehaviour
         levelName.text = levelNames[index - 1];
 
         bool ignore = true;
-
+        AudioClip[] placeSounds = {switchToNight, switchToDungeon};
         Coroutine changingFloors = null;
         Coroutine changingFaces = null;
         void loadLeft()
@@ -271,6 +284,7 @@ public class UIManager : MonoBehaviour
                 
                 StartCoroutine(bossController.ChangeBossFace(bossFaceNames[index - 1]));
                 if (changingFloors != null) StopCoroutine(changingFloors);
+                soundEffectSource.PlayOneShot(placeSounds[index - 1]);
                 changingFloors =  StartCoroutine(vFXManager.switchWallsToo(levelNames[index - 1].ToLower()));
             }
             //maybe another function in here, oh yea one that interacts with ground mover for the backrounds, eventually
@@ -298,6 +312,7 @@ public class UIManager : MonoBehaviour
                 
                 StartCoroutine(bossController.ChangeBossFace(bossFaceNames[index - 1]));
                 if (changingFloors != null) StopCoroutine(changingFloors);
+                soundEffectSource.PlayOneShot(placeSounds[index - 1]);
                 changingFloors = StartCoroutine(vFXManager.switchWallsToo(levelNames[index - 1].ToLower()));
             }
             //maybe another function in here, oh yea one that interacts with ground mover for the backrounds, eventually
@@ -343,6 +358,7 @@ public class UIManager : MonoBehaviour
         right.onClick.AddListener(loadRight);
         back.onClick.AddListener(LoadBack);
         startRound.onClick.AddListener(LoadPlay);
+        soundEffectSource.PlayOneShot(placeSounds[index - 1]);
 
 
         blackScreen.CrossFadeAlpha(0, 2f, true);

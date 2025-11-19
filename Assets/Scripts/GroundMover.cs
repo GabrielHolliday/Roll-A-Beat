@@ -83,11 +83,12 @@ public class GroundMover : MonoBehaviour
 
             }
 
-            Vector3 targPos = new Vector3(activeSpires[i].transform.localPosition.x, -activeSpires[i].transform.localScale.y / 2, zSpawnPos + zOffset);
+            Vector3 targPos = new Vector3(activeSpires[i].transform.localPosition.x, -activeSpires[i].transform.localScale.y / 2 -0.02f, zSpawnPos + zOffset);
             StartCoroutine(utilityScript.Tween(activeSpires[i], targPos, new Vector3(0, 180, 0), 2000, UtilityScript.easingStyle.Cube, UtilityScript.easingDirection.Out, source.Token));
         }
         
     }
+
 
     private IEnumerator generateSpire(CancellationToken tkn)
     {
@@ -122,7 +123,7 @@ public class GroundMover : MonoBehaviour
                        
                     }
 
-                    Vector3 targPos = new Vector3(activeSpires[i].transform.localPosition.x, -activeSpires[i].transform.localScale.y / 2, zSpawnPos + zOffset);
+                    Vector3 targPos = new Vector3(activeSpires[i].transform.localPosition.x, -activeSpires[i].transform.localScale.y / 2 - 0.02f, zSpawnPos + zOffset);
                     //activeSpires[i].transform.localPosition = targPos;
                     StartCoroutine(utilityScript.Tween(activeSpires[i], targPos, new Vector3(0, 180, 0), 2000, UtilityScript.easingStyle.Cube, UtilityScript.easingDirection.Out, source.Token));
                 }

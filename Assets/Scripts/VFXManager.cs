@@ -15,6 +15,8 @@ public class VFXManager : MonoBehaviour
     public GameObject dungeonWallPrefab;
     public GameObject forrestWallPrefab;
 
+    public Camera backgroundCamera;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
 
     private Vector3 CurrentColorTarg = new Vector3(255, 61, 61);
@@ -34,6 +36,11 @@ public class VFXManager : MonoBehaviour
     //wall stuff
     private float spawnAt;
     private float curWallLeng;
+    //
+
+    //background colors
+    private Color forrestSkyColor = new Color(21,9, 53) / 255f;
+    private Color dungeonSkyColor = new Color(5,5,5) / 255f;
     //
 
 
@@ -83,23 +90,42 @@ public class VFXManager : MonoBehaviour
         spawnAt += curWallLeng;
     }
 
-    
+    private Coroutine changeCoroutine;
+    private IEnumerator changeSkyColor(Color newColor)
+    {
+        float incrementynator5000 = 0f;
+        while(incrementynator5000 <0.99f)
+        {
+            RenderSettings.fogColor = Color.Lerp(RenderSettings.fogColor, newColor, incrementynator5000);
+            backgroundCamera.backgroundColor = Color.Lerp(backgroundCamera.backgroundColor, newColor, incrementynator5000);
+            incrementynator5000 += 0.05f*Time.deltaTime;
+            yield return new WaitForEndOfFrame();
+        }
+        Debug.Log("finished");
+    }
+
+    private void TransitionToForrestBackGround()
+    {
+        changeSkyColor(forrestSkyColor);
+        //rollInBackground();
+
+    }
 
     
     public IEnumerator switchWallsToo(string type)
     {
-        
+        if(changeCoroutine != null) StopCoroutine(changeCoroutine);
         switch(type)
         {
             case "forest":
                 //any lighting animations
-
+                changeCoroutine = StartCoroutine(changeSkyColor(forrestSkyColor));
                 //
                 currentSetWall = forrestWallPrefab;
                 break;
             case "dungeon":
                 //lighting
-
+                changeCoroutine = StartCoroutine(changeSkyColor(dungeonSkyColor));
                 //
                 currentSetWall = dungeonWallPrefab;
                 break; 
@@ -153,7 +179,7 @@ public class VFXManager : MonoBehaviour
         //============================================================================================================
 
         //wall mover==================================================================================================
-        wallParent.transform.localPosition+=Vector3.back * 10*Time.deltaTime;
+        wallParent.transform.localPosition+=Vector3.back * 5*Time.deltaTime;
         //spawnAt-= 1*10*Time.deltaTime;
         if (wallParent.transform.localPosition.z < -spawnAt + 500)
         {

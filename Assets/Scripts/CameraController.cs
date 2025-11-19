@@ -3,6 +3,7 @@ using System;
 using System.Threading.Tasks;
 using Unity.Mathematics;
 using System.Collections;
+using Unity.VisualScripting;
 
 public class CameraController : MonoBehaviour
 {
@@ -18,6 +19,7 @@ public class CameraController : MonoBehaviour
     {
         initRot = transform.rotation.eulerAngles;
         //Debug.Log(initRot);
+        StartCoroutine(rumble());
         initPos = transform.position;
         
     }
@@ -27,41 +29,26 @@ public class CameraController : MonoBehaviour
     public int angleWeight = 0;
 
 
-    /*
+    private float rumbleIntensity=0;
+    private float addRumbleToPos = 0;
     private IEnumerator rumble()
     {
-        if (rumblin) yield break;
-
-        rumblin = true;
-
-        while (rumblin)
+        while(true)
         {
-            for (int j = 0; j < 100; j++)
-            {
-
-                float stPs = rumbleInt;
-                float enPs = -rumbleInt;
-                int cycleTime = 10;
-                for (int i = 0; i < cycleTime; i++)
-                {
-                    rumbleInt = Mathf.Lerp(stPs, enPs, i / cycleTime);
-                    baselineOffset = utilityScript.Clamp(rumbleInt, 0.01f, -0.01f);
-                    yield return null;
-                }
-                rumbleInt = -rumbleInt;
-            }
+            addRumbleToPos = Mathf.Sin(Time.time*50) * rumbleIntensity;
+            rumbleIntensity -= Time.deltaTime * 2;
+            rumbleIntensity = utilityScript.Clamp(rumbleIntensity,1,0);
+            yield return null;
         }
     }
-    */
 
-    //
 
     
 
     public void addRumble(float amount)
     {
-
-
+        rumbleIntensity+= amount;
+        
     }
 
     static string boundTo = "None";
@@ -83,7 +70,7 @@ public class CameraController : MonoBehaviour
         {
             //camera position
 
-            transform.position = new Vector3(initPos.x + (player.transform.position.x / 3), initPos.y, initPos.z + (player.transform.position.z / 3));
+            transform.position = Vector3.Lerp(transform.position,new Vector3(initPos.x + (player.transform.position.x / 3) + addRumbleToPos, initPos.y, initPos.z + (player.transform.position.z / 3)),0.05f);
             
             //-----------
 
@@ -91,10 +78,10 @@ public class CameraController : MonoBehaviour
             switch(boundTo)
             {
                 case "Ball":
-                    targVec3 = new Vector3(baselineOffset + initRot.x - player.transform.position.z / 3, baselineOffset + initRot.y - player.transform.position.x * 1.2f, baselineOffset + initRot.z + angleWeight - player.transform.position.x * 1);
+                    targVec3 = Vector3.Lerp(targVec3, new Vector3(baselineOffset + initRot.x - player.transform.position.z / 3, baselineOffset + initRot.y - player.transform.position.x * 1.2f, baselineOffset + initRot.z + angleWeight - player.transform.position.x * 1),0.1f);
                     break;
                 case "Mouse":
-                    targVec3 = new Vector3(baselineOffset + initRot.x - (( Input.mousePosition.y + 300) *0.005f) , baselineOffset + initRot.y + ((Input.mousePosition.x - utilityScript.screenSize.Item2)  * 0.005f), baselineOffset + initRot.z);
+                    targVec3 = Vector3.Lerp(targVec3, new Vector3(baselineOffset + initRot.x - (( Input.mousePosition.y + 300) *0.005f) , baselineOffset + initRot.y + ((Input.mousePosition.x - utilityScript.screenSize.Item2)  * 0.005f), baselineOffset + initRot.z),0.1f);
                     break;
                   
             }

@@ -305,6 +305,16 @@ public class BossController : MonoBehaviour
                 intendedRot = new Vector3(-25, 0, 0);
                 intendedPos = basePos + new Vector3(0, 2, -8);
                 break;
+            case "Wendigo":
+                intendedPosP2 = new Vector3(0, 0, -1);
+                lIris.transform.Find("Standard").gameObject.SetActive(true);
+                rIris.transform.Find("Standard").gameObject.SetActive(true);
+                lStar.SetActive(false);
+                rStar.SetActive(false);
+                intendedRot = new Vector3(-25, 0, 0);
+                intendedPos = basePos + new Vector3(0, 2, -8);
+                break;
+            
         }
         Debug.Log("anim1");
         //wendigoAnim
