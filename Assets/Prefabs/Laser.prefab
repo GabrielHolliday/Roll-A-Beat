@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 7603642397581454388}
   - component: {fileID: 5472840253622458172}
   - component: {fileID: 1757339165876309277}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: LaserBody
   m_TagString: Laser
   m_Icon: {fileID: 0}
@@ -119,7 +119,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4075551223188941791}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Laser
   m_TagString: Untagged
   m_Icon: {fileID: 0}

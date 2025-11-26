@@ -38,6 +38,8 @@ public class UtilityScript : MonoBehaviour
         
     }
 
+    public AudioLowPassFilter filter;
+
 
     public (int, int) screenSize = (UnityEngine.Screen.width, UnityEngine.Screen.height);
     //cancelations
@@ -54,6 +56,28 @@ public class UtilityScript : MonoBehaviour
         if (startNum > maxNum) return maxNum;
         else if (startNum < minNum) return minNum;
         return startNum;
+    }
+
+    public IEnumerator MuffleMusic()
+    {
+        filter.cutoffFrequency = 7500;
+        while (filter.cutoffFrequency > 300)
+        {
+            Debug.Log("GOIN DOWN");
+            filter.cutoffFrequency -= Time.deltaTime * 100000;
+            yield return null;
+        }
+        filter.cutoffFrequency = 300;
+    }
+
+    public IEnumerator UnMuffleMusic()
+    {
+        while (filter.cutoffFrequency < 22000)
+        {
+            filter.cutoffFrequency += Time.deltaTime * 100000;
+            yield return null;
+        }
+        filter.cutoffFrequency = 22000;
     }
 
     private List<AnimateJobs> alreadyTweening = new List<AnimateJobs>();

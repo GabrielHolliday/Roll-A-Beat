@@ -266,7 +266,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 42628538}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Iris
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -813,7 +813,7 @@ GameObject:
   - component: {fileID: 205174376}
   - component: {fileID: 205174375}
   - component: {fileID: 205174374}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: RedSparkle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1504,7 +1504,7 @@ GameObject:
   - component: {fileID: 409704270}
   - component: {fileID: 409704269}
   - component: {fileID: 409704268}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Part1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1686,7 +1686,7 @@ GameObject:
   - component: {fileID: 440946702}
   - component: {fileID: 440946701}
   - component: {fileID: 440946700}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: RedSparkle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1898,7 +1898,7 @@ GameObject:
   - component: {fileID: 495285901}
   - component: {fileID: 495285900}
   - component: {fileID: 495285899}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: LeftEye
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2398,7 +2398,7 @@ GameObject:
   - component: {fileID: 567348882}
   - component: {fileID: 567348881}
   - component: {fileID: 567348880}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Part1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2551,7 +2551,7 @@ GameObject:
   - component: {fileID: 577103995}
   - component: {fileID: 577103994}
   - component: {fileID: 577103993}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Part2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2838,7 +2838,7 @@ GameObject:
   m_Component:
   - component: {fileID: 631162125}
   - component: {fileID: 631162124}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Boss
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2893,7 +2893,7 @@ GameObject:
   - component: {fileID: 632860167}
   - component: {fileID: 632860166}
   - component: {fileID: 632860165}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: lEye
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3080,7 +3080,7 @@ GameObject:
   - component: {fileID: 687720856}
   - component: {fileID: 687720858}
   - component: {fileID: 687720857}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Spot Light
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3675,7 +3675,7 @@ GameObject:
   - component: {fileID: 746224938}
   - component: {fileID: 746224937}
   - component: {fileID: 746224936}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Part2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3947,7 +3947,7 @@ GameObject:
   - component: {fileID: 829346839}
   - component: {fileID: 829346838}
   - component: {fileID: 829346837}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: RightEye
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4056,7 +4056,7 @@ GameObject:
   - component: {fileID: 838853900}
   - component: {fileID: 838853899}
   - component: {fileID: 838853898}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Sparkle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4243,7 +4243,7 @@ GameObject:
   - component: {fileID: 849340135}
   - component: {fileID: 849340134}
   - component: {fileID: 849340133}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Player
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4355,9 +4355,14 @@ MonoBehaviour:
   scoreGui: {fileID: 0}
   winMessage: {fileID: 391811193}
   gameManage: {fileID: 291512881}
+  health: 0
   groundSpeed: 0
   rythmEngine: {fileID: 2107793229}
   godMode: 0
+  UtilityScript: {fileID: 859265563}
+  songPlaying: {fileID: 1644895568}
+  DeathCam: {fileID: 1647208775}
+  mainCam: {fileID: 961739752}
 --- !u!114 &849340134
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4444,6 +4449,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9862e64f8a55be24a99f426c51643212, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  filter: {fileID: 1644895569}
 --- !u!4 &859265564
 Transform:
   m_ObjectHideFlags: 0
@@ -4715,7 +4721,7 @@ MonoBehaviour:
   m_RendererIndex: -1
   m_VolumeLayerMask:
     serializedVersion: 2
-    m_Bits: 55
+    m_Bits: 503
   m_VolumeTrigger: {fileID: 0}
   m_VolumeFrameworkUpdateModeOption: 2
   m_RenderPostProcessing: 0
@@ -4786,7 +4792,7 @@ Camera:
   m_Depth: 1
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 55
+    m_Bits: 503
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0
@@ -4841,7 +4847,7 @@ GameObject:
   - component: {fileID: 964630434}
   - component: {fileID: 964630436}
   - component: {fileID: 964630435}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Spot Light
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5813,7 +5819,7 @@ GameObject:
   - component: {fileID: 1412740355}
   - component: {fileID: 1412740354}
   - component: {fileID: 1412740353}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Sparkle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -6051,7 +6057,7 @@ GameObject:
   - component: {fileID: 1476695655}
   - component: {fileID: 1476695654}
   - component: {fileID: 1476695653}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: rEye
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -6159,7 +6165,7 @@ GameObject:
   - component: {fileID: 1522309106}
   - component: {fileID: 1522309105}
   - component: {fileID: 1522309104}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Standard
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -6510,7 +6516,7 @@ GameObject:
   - component: {fileID: 1590068205}
   - component: {fileID: 1590068204}
   - component: {fileID: 1590068203}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: rEye
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -6719,6 +6725,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1644895567}
   - component: {fileID: 1644895568}
+  - component: {fileID: 1644895569}
   m_Layer: 0
   m_Name: AudioTrack1
   m_TagString: Untagged
@@ -6838,6 +6845,187 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!169 &1644895569
+AudioLowPassFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1644895566}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_LowpassResonanceQ: 1
+  lowpassLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+--- !u!1 &1647208774
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1647208779}
+  - component: {fileID: 1647208775}
+  - component: {fileID: 1647208778}
+  - component: {fileID: 1647208777}
+  - component: {fileID: 1647208776}
+  m_Layer: 0
+  m_Name: DeathCamera
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!20 &1647208775
+Camera:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1647208774}
+  m_Enabled: 1
+  serializedVersion: 2
+  m_ClearFlags: 2
+  m_BackGroundColor: {r: 0, g: 0, b: 0, a: 0}
+  m_projectionMatrixMode: 1
+  m_GateFitMode: 2
+  m_FOVAxisMode: 0
+  m_Iso: 200
+  m_ShutterSpeed: 0.005
+  m_Aperture: 16
+  m_FocusDistance: 10
+  m_FocalLength: 20.78461
+  m_BladeCount: 5
+  m_Curvature: {x: 2, y: 11}
+  m_BarrelClipping: 0.25
+  m_Anamorphism: 0
+  m_SensorSize: {x: 36, y: 24}
+  m_LensShift: {x: 0, y: 0}
+  m_NormalizedViewPortRect:
+    serializedVersion: 2
+    x: 0
+    y: 0
+    width: 1
+    height: 1
+  near clip plane: 0.3
+  far clip plane: 1000
+  field of view: 60.000004
+  orthographic: 0
+  orthographic size: 5
+  m_Depth: 50
+  m_CullingMask:
+    serializedVersion: 2
+    m_Bits: 192
+  m_RenderingPath: -1
+  m_TargetTexture: {fileID: 0}
+  m_TargetDisplay: 0
+  m_TargetEye: 3
+  m_HDR: 1
+  m_AllowMSAA: 1
+  m_AllowDynamicResolution: 0
+  m_ForceIntoRT: 0
+  m_OcclusionCulling: 1
+  m_StereoConvergence: 10
+  m_StereoSeparation: 0.022
+--- !u!81 &1647208776
+AudioListener:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1647208774}
+  m_Enabled: 1
+--- !u!114 &1647208777
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1647208774}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8b848b7a8ef79b84f8133f12d2a07992, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  player: {fileID: 849340128}
+  utilityScript: {fileID: 859265563}
+  cameraMoveActive: 1
+  rumblin: 0
+  angleWeight: 0
+--- !u!114 &1647208778
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1647208774}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a79441f348de89743a2939f4d699eac1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_RenderShadows: 1
+  m_RequiresDepthTextureOption: 2
+  m_RequiresOpaqueTextureOption: 2
+  m_CameraType: 0
+  m_Cameras:
+  - {fileID: 961739752}
+  m_RendererIndex: -1
+  m_VolumeLayerMask:
+    serializedVersion: 2
+    m_Bits: 448
+  m_VolumeTrigger: {fileID: 0}
+  m_VolumeFrameworkUpdateModeOption: 2
+  m_RenderPostProcessing: 0
+  m_Antialiasing: 0
+  m_AntialiasingQuality: 2
+  m_StopNaN: 0
+  m_Dithering: 0
+  m_ClearDepth: 1
+  m_AllowXRRendering: 1
+  m_AllowHDROutput: 1
+  m_UseScreenCoordOverride: 0
+  m_ScreenSizeOverride: {x: 0, y: 0, z: 0, w: 0}
+  m_ScreenCoordScaleBias: {x: 0, y: 0, z: 0, w: 0}
+  m_RequiresDepthTexture: 0
+  m_RequiresColorTexture: 0
+  m_Version: 2
+  m_TaaSettings:
+    m_Quality: 3
+    m_FrameInfluence: 0.1
+    m_JitterScale: 1
+    m_MipBias: 0
+    m_VarianceClampScale: 0.9
+    m_ContrastAdaptiveSharpening: 0
+--- !u!4 &1647208779
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1647208774}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0.30966777, y: 0.000000119209275, z: -0.00000035015458, w: 0.9508449}
+  m_LocalPosition: {x: 0, y: 23.404459, z: -25.751057}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 36.078, y: 0, z: 0}
 --- !u!1 &1654764047
 GameObject:
   m_ObjectHideFlags: 0
@@ -6986,7 +7174,7 @@ GameObject:
   - component: {fileID: 1685181502}
   - component: {fileID: 1685181501}
   - component: {fileID: 1685181500}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Wendigo
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -7228,7 +7416,7 @@ GameObject:
   - component: {fileID: 1769865530}
   - component: {fileID: 1769865529}
   - component: {fileID: 1769865528}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Standard
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -7703,7 +7891,7 @@ GameObject:
   - component: {fileID: 1902035095}
   - component: {fileID: 1902035097}
   - component: {fileID: 1902035096}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Spot Light
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -7822,7 +8010,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1908033030}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Iris
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -7858,7 +8046,7 @@ GameObject:
   - component: {fileID: 1930102852}
   - component: {fileID: 1930102854}
   - component: {fileID: 1930102853}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Spot Light
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -7980,7 +8168,7 @@ GameObject:
   - component: {fileID: 1962907740}
   - component: {fileID: 1962907739}
   - component: {fileID: 1962907738}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: SkullFace
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -8551,7 +8739,7 @@ GameObject:
   - component: {fileID: 2134215835}
   - component: {fileID: 2134215834}
   - component: {fileID: 2134215833}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: lEye
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -8653,6 +8841,7 @@ SceneRoots:
   m_Roots:
   - {fileID: 961739753}
   - {fileID: 65082590}
+  - {fileID: 1647208779}
   - {fileID: 203844589}
   - {fileID: 849340132}
   - {fileID: 513922694}
