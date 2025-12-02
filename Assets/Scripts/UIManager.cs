@@ -9,6 +9,7 @@ using TMPro;
 //using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
+using static Unity.VisualScripting.Metadata;
 
 
 
@@ -21,6 +22,7 @@ public class UIManager : MonoBehaviour
     public Canvas playModeCanvas;
     public Canvas onlyShowBoss;
 
+    public PlayerController playerController;
     public VFXManager vFXManager;
     public GameManage gameManager;
     public CameraController cameraController;
@@ -65,6 +67,7 @@ public class UIManager : MonoBehaviour
         curCanvas = Instantiate(toSwap);
         curCanvas.gameObject.transform.parent = gameObject.transform;
         curCanvas.gameObject.SetActive(true);
+        playerController.pingHealth.RemoveAllListeners();
         //UnityEngine.Debug.Log(curCanvas.gameObject.name);
 
         //getting children 
@@ -95,6 +98,9 @@ public class UIManager : MonoBehaviour
                 cameraController.bindTo("Ball");
                 
                 StartCoroutine(PostGameCanvasControl(children, source.Token));
+                break;
+            case "PlaymodeCanvas(Clone)":
+                PlayModeCanvasControl(children);
                 break;
         }
     }
@@ -462,9 +468,68 @@ public class UIManager : MonoBehaviour
         }
         
     }
+
+    
+    public void PlayModeCanvasControl(List<GameObject> children)
+    {
+        Image Heart1 = null;
+        Image Heart2 = null;
+        Image Heart3 = null;
+        Image Heart1C = null;
+        Image Heart2C = null;
+        Image Heart3C = null;
+        for (int i = 0; i < children.Count; i++)
+        {
+            switch (children[i].name)
+            {
+                case "Heart1":
+                    Heart1 = children[i].transform.GetComponent<Image>();
+                    break;
+                case "Heart2":
+                    Heart2 = children[i].transform.GetComponent<Image>();
+                    break;
+                case "Heart3":
+                    Heart3 = children[i].transform.GetComponent<Image>();
+                    break;
+                case "Heart1C":
+                    Heart1C = children[i].transform.GetComponent<Image>();
+                    break;
+                case "Heart2C":
+                    Heart2C = children[i].transform.GetComponent<Image>();
+                    break;
+                case "Heart3C":
+                    Heart3C = children[i].transform.GetComponent<Image>();
+                    break;
+            }
+        }
+        Heart1.CrossFadeAlpha(255f, 1f, false);
+        Heart2.CrossFadeAlpha(255f, 2f, false);
+        Heart3.CrossFadeAlpha(255f, 3f, false);
+        void ChangeHealth()
+        {
+            switch (playerController.health)
+            {
+                case 2:
+                    Heart3.gameObject.SetActive(false);
+                    Heart3C.gameObject.SetActive(true);
+                    break;
+                case 1:
+                    Heart2.gameObject.SetActive(false);
+                    Heart2C.gameObject.SetActive(true);
+                    break;
+                case 0:
+                    Heart1.gameObject.SetActive(false);
+                    Heart1C.gameObject.SetActive(true);
+                    break;
+
+            }
+        }
+        playerController.pingHealth.AddListener(ChangeHealth);
+    }
     
     // Update is called once per frame
-    
+
+  
    
     void Update()
     {

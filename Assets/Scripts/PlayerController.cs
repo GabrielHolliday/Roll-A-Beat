@@ -1,12 +1,13 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 using TMPro;
-using Unity.VisualScripting;
 using System.Collections;
+using UnityEngine.Events;
 
 public class PlayerController : MonoBehaviour
 {
-    
+    public UnityEvent pingHealth;
+    private System.Random random = new System.Random();
     public float speed = 0.0f;
     public TextMeshProUGUI scoreGui;
     public TextMeshProUGUI winMessage;
@@ -35,6 +36,11 @@ public class PlayerController : MonoBehaviour
     public Camera DeathCam;
     public Camera mainCam;
 
+    public GameObject shatteredPlayer;
+
+    public Vector3 dirHit;
+    private GameObject shtrPlayer;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -46,12 +52,15 @@ public class PlayerController : MonoBehaviour
  
     }
 
-    
-    // Update is called once per frame
 
+
+
+    // Update is called once per frame
+    private bool test = false;
     private IEnumerator TakeDamage()
     {
         health--;
+        pingHealth.Invoke();
         if(health > 0)
         {
             //all the death effects
@@ -77,31 +86,51 @@ public class PlayerController : MonoBehaviour
         }
         else
         {
+            if (test == true) yield break;
+            test = true;
+            shtrPlayer = Instantiate(shatteredPlayer, transform.position + Vector3.up * 0.5f, Quaternion.Euler(0, 0, 0));
+
+            
+            for (int i = 0; i < shtrPlayer.transform.childCount; i++)
+            {
+                shtrPlayer.transform.GetChild(i).GetComponent<Rigidbody>().AddForce(new Vector3(dirHit.z * random.Next(3,40), random.Next(-2,20), 0), ForceMode.Impulse);
+            }
+            
+            Debug.LogWarning(dirHit);
+            //shtrPlayer.transform.GetComponent<Rigidbody>().AddForce(new Vector3(dirHit.z * 200,0,0) );
             DeathCam.gameObject.SetActive(true);
             mainCam.gameObject.SetActive(false);
+            GetComponent<Renderer>().enabled = false;
             
+           
             StartCoroutine(UtilityScript.MuffleMusic());
-            Time.timeScale = 0.1f;
-            songPlaying.Pause();
+            Time.timeScale = 0.3f;
+            //songPlaying.Pause();
 
 
-            yield return new WaitForSeconds(0.1f);
+            yield return new WaitForSeconds(0.3f);
 
             StartCoroutine(UtilityScript.UnMuffleMusic());
-            songPlaying.Play();
+            //songPlaying.Play();
             Time.timeScale = 1f;
             transform.position = new Vector3(0, 1, 0);
             DeathCam.gameObject.SetActive(false);
             mainCam.gameObject.SetActive(true);
             gameObject.SetActive(false);
             gameManage.PlayerDied();
+          
+            
+            
         }
     }
 
-   
+    
 
     public void Respawn()
     {
+        invunerabilityTime = 0;
+        Time.timeScale = 1f;
+        
         gameObject.transform.position = respawnPos;
         gameObject.SetActive(true);
         rb = GetComponent<Rigidbody>();
@@ -110,7 +139,11 @@ public class PlayerController : MonoBehaviour
         movementX = 0;
         movementY = 0;
         health = 3;
-
+        if (shtrPlayer != null) Destroy(shtrPlayer);
+        GetComponent<Renderer>().enabled = true;
+        StartCoroutine(UtilityScript.UnMuffleMusic());
+        test = false;
+        Debug.Log("Respawning");
     }
     void OnMove(InputValue movementValue)
     {
@@ -139,7 +172,7 @@ public class PlayerController : MonoBehaviour
     {
         if(invunerabilityTime > 0)
         {
-            Debug.Log("invunerable");
+            //Debug.Log("invunerable");
             plrMat.material.color = new Color(plrMat.material.color.r, plrMat.material.color.g, plrMat.material.color.b, Mathf.Clamp(Mathf.Sin(Time.time * 10), 0.1f, 0.4f));
             invunerabilityTime -= Time.deltaTime;
         }
@@ -154,6 +187,7 @@ public class PlayerController : MonoBehaviour
         
         if (other.gameObject.CompareTag("Laser") && godMode == false && invunerabilityTime <= 0)
         {
+            dirHit = other.transform.forward;
             StartCoroutine(TakeDamage());
         }
     }

@@ -152,7 +152,7 @@ public class RythmEngine : MonoBehaviour
     private void fireLaser(Transform parent)
     {
         if (parent == null) return;
-        float targPosForLaser = parent.position.x;
+        float targPosForLaser = parent.position.x + (parent.transform.forward * 4).x;
         //if (parent.position.x > 0) targPosForLaser = parent.position.x - laser.transform.lossyScale.y;
         //else targPosForLaser = parent.position.x + laser.transform.lossyScale.y;
         //Debug.Log(parent.rotation.y);
@@ -203,8 +203,8 @@ public class RythmEngine : MonoBehaviour
 
         float targPosForLaser = obj.transform.position.x;
         GameObject ghost = obj.transform.Find("Ghost").gameObject;
-        ghost.transform.localScale = new Vector3(0, 6, 0);
-        StartCoroutine(utilityScript.Tween(ghost,new Vector3(0,0,10), new Vector3(0,90,90), new Vector3(2,6,2), predictNextFire(posIndex), UtilityScript.easingStyle.None, UtilityScript.easingDirection.Out, gameManage.source.Token));
+        ghost.transform.localScale = new Vector3(0, 34, 0);
+        StartCoroutine(utilityScript.Tween(ghost,new Vector3(0,0,36), new Vector3(0,90,90), new Vector3(2,34,2), predictNextFire(posIndex), UtilityScript.easingStyle.None, UtilityScript.easingDirection.Out, gameManage.source.Token));
         obj.transform.Find("Ghost").gameObject.SetActive(true);
         yield return null;
     }

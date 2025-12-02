@@ -60,10 +60,11 @@ public class UtilityScript : MonoBehaviour
 
     public IEnumerator MuffleMusic()
     {
+        //Debug.Log("Muffeling");
         filter.cutoffFrequency = 7500;
         while (filter.cutoffFrequency > 300)
         {
-            Debug.Log("GOIN DOWN");
+            //Debug.Log("GOIN DOWN");
             filter.cutoffFrequency -= Time.deltaTime * 100000;
             yield return null;
         }
@@ -72,6 +73,7 @@ public class UtilityScript : MonoBehaviour
 
     public IEnumerator UnMuffleMusic()
     {
+        //Debug.Log("UnMuffeling");
         while (filter.cutoffFrequency < 22000)
         {
             filter.cutoffFrequency += Time.deltaTime * 100000;
