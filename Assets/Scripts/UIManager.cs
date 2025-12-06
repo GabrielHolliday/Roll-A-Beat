@@ -1,15 +1,15 @@
 
 using System.Collections;
 using System.Collections.Generic;
-using System.IO;
+
 using System.Threading;
-using System.Threading.Tasks;
+
 using TMPro;
 
 //using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
-using static Unity.VisualScripting.Metadata;
+
 
 
 
@@ -511,15 +511,15 @@ public class UIManager : MonoBehaviour
             {
                 case 2:
                     Heart3.gameObject.SetActive(false);
-                    Heart3C.gameObject.SetActive(true);
+                    //Heart3C.gameObject.SetActive(true);
                     break;
                 case 1:
                     Heart2.gameObject.SetActive(false);
-                    Heart2C.gameObject.SetActive(true);
+                    //Heart2C.gameObject.SetActive(true);
                     break;
                 case 0:
                     Heart1.gameObject.SetActive(false);
-                    Heart1C.gameObject.SetActive(true);
+                    //Heart1C.gameObject.SetActive(true);
                     break;
 
             }

@@ -1,7 +1,6 @@
 using UnityEngine;
 using System.Threading;
-using System.Threading.Tasks;
-using UnityEngine.Rendering;
+
 using System.Collections.Generic;
 using System.Collections;
 

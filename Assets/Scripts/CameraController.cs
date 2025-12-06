@@ -1,9 +1,7 @@
 using UnityEngine;
-using System;
-using System.Threading.Tasks;
-using Unity.Mathematics;
+
 using System.Collections;
-using Unity.VisualScripting;
+
 
 public class CameraController : MonoBehaviour
 {

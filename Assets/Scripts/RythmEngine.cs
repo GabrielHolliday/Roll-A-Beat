@@ -1,18 +1,15 @@
-using System;
+
 using System.Collections;
 using System.Collections.Generic;
-using System.IO;
+
 using System.Threading;
-using System.Threading.Tasks;
-using System.Xml;
+
 //using UnityEngine.Timeline;
 //using UnityEngine.UIElements;
 using TMPro;
-using Unity.Mathematics;
-using Unity.VisualScripting;
+
 using UnityEngine;
-using UnityEngine.UIElements;
-using static UnityEngine.EventSystems.EventTrigger;
+
 //using UnityEngine.Audio;
 
 public class RythmEngine : MonoBehaviour
@@ -152,7 +149,7 @@ public class RythmEngine : MonoBehaviour
     private void fireLaser(Transform parent)
     {
         if (parent == null) return;
-        float targPosForLaser = parent.position.x + (parent.transform.forward * 4).x;
+        float targPosForLaser = parent.position.x; //+ (parent.transform.forward * 4).x;
         //if (parent.position.x > 0) targPosForLaser = parent.position.x - laser.transform.lossyScale.y;
         //else targPosForLaser = parent.position.x + laser.transform.lossyScale.y;
         //Debug.Log(parent.rotation.y);

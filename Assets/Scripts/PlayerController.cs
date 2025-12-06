@@ -76,7 +76,7 @@ public class PlayerController : MonoBehaviour
 
             yield return new WaitForSeconds(0.05f);
 
-            StartCoroutine(UtilityScript.UnMuffleMusic());
+            
             while (Time.timeScale < 1f)
             {
                 Time.timeScale += Time.deltaTime * 10;
@@ -172,12 +172,14 @@ public class PlayerController : MonoBehaviour
     {
         if(invunerabilityTime > 0)
         {
+
             //Debug.Log("invunerable");
             plrMat.material.color = new Color(plrMat.material.color.r, plrMat.material.color.g, plrMat.material.color.b, Mathf.Clamp(Mathf.Sin(Time.time * 10), 0.1f, 0.4f));
             invunerabilityTime -= Time.deltaTime;
         }
         else
         {
+            if(UtilityScript.isMuffled == true) StartCoroutine(UtilityScript.UnMuffleMusic());
             plrMat.material.color = new Color(plrMat.material.color.r, plrMat.material.color.g, plrMat.material.color.b,1f);
         }
     }

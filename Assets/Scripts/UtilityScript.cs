@@ -1,19 +1,12 @@
-using System;
+
 using System.Collections;
 using System.Collections.Generic;
-using System.IO;
+
 using System.Threading;
 using System.Threading.Tasks;
-using System.Xml;
-using TMPro;
-using Unity.Mathematics;
-using Unity.VisualScripting;
+
 using UnityEngine;
-using UnityEngine.Rendering.VirtualTexturing;
-using UnityEngine.Timeline;
-using UnityEngine.UIElements;
-//using static UnityEditor.Progress;
-using static UnityEngine.Rendering.DebugUI.MessageBox;
+
 
 public class AnimateJobs
 {
@@ -58,9 +51,12 @@ public class UtilityScript : MonoBehaviour
         return startNum;
     }
 
+    public bool isMuffled = false;
+
     public IEnumerator MuffleMusic()
     {
         //Debug.Log("Muffeling");
+        isMuffled = true;
         filter.cutoffFrequency = 7500;
         while (filter.cutoffFrequency > 300)
         {
@@ -73,6 +69,7 @@ public class UtilityScript : MonoBehaviour
 
     public IEnumerator UnMuffleMusic()
     {
+        isMuffled = false;
         //Debug.Log("UnMuffeling");
         while (filter.cutoffFrequency < 22000)
         {
